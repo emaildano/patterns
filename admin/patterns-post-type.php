@@ -15,120 +15,144 @@
  * Creates the Patterns Custom Post Type and Taxonomy
  */
 
+function patterns_slug() {
+  $patterns_options     = get_option( 'patterns_settings' );
+  $patterns_option_slug = $patterns_options['patterns_cpt_slug'];
+  $patterns_slug        = $patterns_option_slug ? $patterns_option_slug : 'pattern-library';
 
+  return $patterns_slug;
+}
 
 /**
- * Create the Patterns Custom Post Type
+ * Create the Main Patterns Custom Post Type
  */
 
-add_action( 'init', 'patterns_cpt' );
+add_action( 'init', 'patterns_primary_cpt' );
 
-function patterns_cpt() {
-  $options      = get_option( 'patterns_settings' );
-  $option_slug  = $options['patterns_cpt_slug'];
-  $slug = $option_slug ? $option_slug : 'pattern-library';
-
-
-  $labels = array(
-    'name'                => 'Patterns',
-    'singular_name'       => 'Pattern',
-    'menu_name'           => 'Patterns',
-    'name_admin_bar'      => 'Patterns',
-    'parent_item_colon'   => 'Parent Pattern:',
-    'all_items'           => 'All Patterns',
-    'add_new_item'        => 'Add New Pattern',
-    'add_new'             => 'Add Pattern',
-    'new_item'            => 'New Pattern',
-    'edit_item'           => 'Edit Pattern',
-    'update_item'         => 'Update Pattern',
-    'view_item'           => 'View Pattern',
-    'search_items'        => 'Search Pattern',
-    'not_found'           => 'Not found',
-    'not_found_in_trash'  => 'Not found in Trash',
-  );
-
-  $rewrite = array(
-    'slug'                => $slug,
-    'with_front'          => true,
-    'pages'               => true,
-    'feeds'               => true,
-  );
+function patterns_primary_cpt() {
+  $slug = patterns_slug();
 
   $args = array(
     'label'               => 'Pattern',
-    'description'         => 'Patterns and Styles',
-    'labels'              => $labels,
-    'supports'            => array( ),
+    'labels'              => array(
+      'name'              => 'Patterns',
+      'singular_name'     => 'Pattern'
+    ),
+    'supports'            => array( 'title' ),
     'taxonomies'          => array( 'pattern_type' ),
     'hierarchical'        => true,
     'public'              => true,
-    'show_ui'             => true,
-    'show_in_menu'        => true,
-    'menu_position'       => 5,
+    'menu_position'       => 100,
     'menu_icon'           => 'dashicons-layout',
-    'show_in_admin_bar'   => true,
-    'show_in_nav_menus'   => true,
-    'can_export'          => true,
     'has_archive'         => true,
     'exclude_from_search' => true,
-    'publicly_queryable'  => true,
-    'rewrite'             => $rewrite,
+    'rewrite'             => array(
+      'slug'              => $slug
+    ),
     'capability_type'     => 'page',
-    );
+  );
+
   register_post_type( 'patterns', $args );
 
 }
 
+/**
+ *  Type Styles
+ */
 
+add_action( 'init', 'patterns_colors_cpt' );
 
+function patterns_colors_cpt() {
+  $slug = patterns_slug();
+
+  $args = array(
+    'label'               => 'Colors',
+    'labels'              => array(
+      'name'              => 'Colors',
+      'singular_name'     => 'Color'
+    ),
+    'supports'            => array( 'title' ),
+    'hierarchical'        => true,
+    'public'              => true,
+    'has_archive'         => true,
+    'exclude_from_search' => true,
+    'rewrite'             => array(
+      'slug'              => $slug . '-colors'
+    ),
+    'capability_type'     => 'page',
+    'show_in_menu'        => 'edit.php?post_type=patterns'
+  );
+
+  register_post_type( 'patterns_colors', $args );
+
+}
 
 
 /**
- * Create the Patterns Taxonomy
+ *  Typography
  */
-add_action( 'init', 'patterns_taxonomy' );
+add_action( 'init', 'patterns_typography' );
 
-function patterns_taxonomy() {
+function patterns_typography() {
+  $slug = patterns_slug();
 
-  $labels = array(
-    'name'                       => 'Pattern Types',
-    'singular_name'              => 'Pattern Type',
-    'menu_name'                  => 'Pattern Types',
-    'all_items'                  => 'All Pattern Types',
-    'parent_item'                => 'Parent Pattern Types',
-    'parent_item_colon'          => 'Parent Pattern Type:',
-    'new_item_name'              => 'New Pattern Type',
-    'add_new_item'               => 'Add New Pattern Type',
-    'edit_item'                  => 'Edit Pattern Type',
-    'update_item'                => 'Update Pattern Type',
-    'view_item'                  => 'View Pattern Type',
-    'separate_items_with_commas' => 'Separate Pattern Types with commas',
-    'add_or_remove_items'        => 'Add or remove Pattern Types',
-    'choose_from_most_used'      => 'Choose from the most used',
-    'popular_items'              => 'Popular Pattern Types',
-    'search_items'               => 'Search Pattern Types',
-    'not_found'                  => 'Not Found',
-    );
-$args = array(
-  'labels'                     => $labels,
-  'hierarchical'               => true,
-  'public'                     => true,
-  'show_ui'                    => true,
-  'show_admin_column'          => true,
-  'show_in_nav_menus'          => false,
-  'show_tagcloud'              => false,
+  $args = array(
+    'label'               => 'Typography Styles',
+    'labels'              => array(
+      'name'              => 'Typography Styles',
+      'singular_name'     => 'Typography Style'
+    ),
+    'supports'            => array( 'title' ),
+    'hierarchical'        => true,
+    'public'              => true,
+    'has_archive'         => true,
+    'exclude_from_search' => true,
+    'rewrite'             => array(
+      'slug'              => $slug . '-type-styles'
+    ),
+    'capability_type'     => 'page',
+    'show_in_menu'        => 'edit.php?post_type=patterns'
   );
-register_taxonomy( 'pattern_type', array( 'patterns' ), $args );
+
+  register_post_type( 'patterns_typography', $args );
 
 }
 
 
+// add_action( 'init', 'patterns_type' );
 
-// Flush the rewrite rules to update if slug is set
-add_action('admin-init', 'patterns_flush_rewrite');
-function patterns_flush_rewrite() {
-  $options      = get_option( 'patterns_settings' );
-  $option_slug  = $options['patterns_cpt_slug'];
-  if( isset($option_slug) )
-    flush_rewrite_rules();
+// function patterns_type() {
+//   $slug = patterns_slug();
+
+//   $args = array(
+//     'label'               => 'Pattern Types',
+//     'labels'              => array(
+//       'name'              => 'Pattern Types',
+//       'singular_name'     => 'Pattern Type'
+//     ),
+//     'description'         => 'Classifications of Menu Types.'
+//     'supports'            => array( 'title' ),
+//     'hierarchical'        => true,
+//     'public'              => true,
+//     'has_archive'         => true,
+//     'exclude_from_search' => true,
+//     'rewrite'             => array(
+//       'slug'              => $slug . '-types'
+//     ),
+//     'capability_type'     => 'page',
+//     'show_in_menu'        => 'edit.php?post_type=patterns'
+//   );
+
+//   register_post_type( 'patterns_types', $args );
+
+// }
+
+
+// Hide 'Add New' for Patterns CPT
+function patterns_hide_add_new() {
+    global $submenu;
+    unset($submenu['edit.php?post_type=patterns'][10]);
 }
+add_action('admin_menu', 'patterns_hide_add_new');
+
+

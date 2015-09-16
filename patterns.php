@@ -33,9 +33,12 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * Activation
  */
-function activate_plugin_name() {
+function activate_patterns() {
   require_once plugin_dir_path( __FILE__ ) . 'includes/patterns-activate.php';
 }
+register_activation_hook( __FILE__, 'activate_patterns' );
+
 
 require plugin_dir_path( __FILE__ ) . 'admin/patterns-post-type.php';
-require plugin_dir_path( __FILE__ ) . 'admin/patterns-options.php';
+require plugin_dir_path( __FILE__ ) . 'admin/patterns-taxonomy.php';
+require plugin_dir_path( __FILE__ ) . 'admin/patterns-plugin-options.php';
