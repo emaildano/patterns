@@ -33,12 +33,11 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * Activation
  */
-function activate_patterns() {
-  require_once plugin_dir_path( __FILE__ ) . 'includes/patterns-activate.php';
+function activate_patterns_plugin() {
+  require_once plugin_dir_path( __FILE__ ) . 'inc/class-patterns-activate.php';
+  new Patterns__Activate;
 }
-register_activation_hook( __FILE__, 'activate_patterns' );
+register_activation_hook( __FILE__, 'activate_patterns_plugin' );
 
-
-require plugin_dir_path( __FILE__ ) . 'admin/patterns-post-type.php';
-require plugin_dir_path( __FILE__ ) . 'admin/patterns-taxonomy.php';
-require plugin_dir_path( __FILE__ ) . 'admin/patterns-plugin-options.php';
+require plugin_dir_path( __FILE__ ) . 'inc/class-patterns-main.php';
+Patterns__Main::Patterns_Init();

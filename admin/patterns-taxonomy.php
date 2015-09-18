@@ -3,6 +3,8 @@
 /**
  * Create the Patterns Taxonomy
  */
+
+
 add_action( 'init', 'patterns_taxonomy' );
 
 function patterns_taxonomy() {
