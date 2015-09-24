@@ -40,6 +40,7 @@ if ( ! class_exists( 'Patterns__Main' ) ) {
     private function Patterns_Require() {
       // Initiate CPTs, Tax, and Options
       require $this->_patterns_plugin_path . 'class-patterns-base.php';
+      require $this->_patterns_plugin_path . 'class-patterns-meta-boxes.php';
       require $this->_patterns_plugin_path . 'class-patterns-views.php';
     }
 
@@ -52,6 +53,7 @@ if ( ! class_exists( 'Patterns__Main' ) ) {
        * Create Custom Post Types
        */
       new Patterns__Base;
+      new Patterns__Meta_Boxes;
 
       /**
        * Display Templates
