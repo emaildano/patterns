@@ -40,4 +40,12 @@ function activate_patterns_plugin() {
 register_activation_hook( __FILE__, 'activate_patterns_plugin' );
 
 require plugin_dir_path( __FILE__ ) . 'inc/class-patterns-main.php';
-Patterns__Main::Patterns_Init();
+// $Patterns__Main::Patterns_Init();
+
+function run_patterns_init() {
+  $plugin = new Patterns__Main();
+  $plugin->Patterns_Init();
+}
+
+run_patterns_init();
+
