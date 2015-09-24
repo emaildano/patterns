@@ -127,6 +127,7 @@ if( have_posts() ) :
           setup_postdata( $post );
 
           echo '<p>' . get_the_title() . '</p>';
+
         }
         wp_reset_postdata();
 
