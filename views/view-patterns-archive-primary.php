@@ -4,6 +4,9 @@ global $post;
 
 if( have_posts() ) :
 
+  // View Function Class
+  require ( trailingslashit( dirname( __FILE__ ) ) . 'view-patterns-view-functions.php' );
+
   // Vars
   $pattern_posts    = array();
   $color_posts      = array();
@@ -52,7 +55,9 @@ if( have_posts() ) :
     } else {
       unset($pattern_posts[$key]); // remove pattern from list
       $pattern_posts['Basic Patterns'][] = $pattern;
-      $pattern_types[] = 'Basic Patterns';
+      if( !in_array('Basic Patterns', $pattern_types) ) {
+        $pattern_types[] = 'Basic Patterns';
+      }
     }
 
   }
@@ -79,45 +84,21 @@ if( have_posts() ) :
 
   // Colors
   if($color_posts) {
-    echo '<section id="patterns-colors" class="patterns-type-section">';
-      echo '<h1>Colors</h1>';
-      foreach($color_posts as $post) {
-        setup_postdata( $post );
-
-        echo '<p>' . get_the_title() . '</p>';
-      }
-      wp_reset_postdata();
-
-
-    echo '</section>';
-
+    Patterns__View_Functions::Patterns_Archive_Part('Colors', $color_posts);
   }
-
-
-
-
 
   // Typeography
   if($typography_posts) {
-    echo '<section id="patterns-colors" class="patterns-type-section">';
-      echo '<h1>Typography</h1>';
-      foreach($color_posts as $post) {
-        setup_postdata( $post );
-
-        echo '<p>' . get_the_title() . '</p>';
-      }
-      wp_reset_postdata();
-
-    echo '</section>';
-
+    Patterns__View_Functions::Patterns_Archive_Part('Typography', $typography_posts);
   }
-
-
-
 
 
   // Pattern Types
   if($pattern_types) {
+
+    // Print Some Stuff!!
+    echo '<pre>'; print_r($pattern_types); echo '</pre>';
+
     foreach($pattern_types as $pattern_type) {
       $type_id = urlencode($pattern_type);
       echo '<section id="patterns-'. strtolower($type_id) . '" class="patterns-type-section">';

@@ -4,15 +4,15 @@ class Patterns__Activate {
 
   public function __constuct() {
     // Add default terms
-    add_action( 'init', array( $this, 'patterns_default_terms' ) );
-    add_action('init', array( $this, 'patterns_flush_rewrite' ) );
+    add_action( 'init', array( $this, 'Pattners_Default_Terms' ) );
+    add_action('init', array( $this, 'Patterns_Flush_Rewrite' ) );
   }
 
 
   /**
    * Create some default terms for the Patterns taxonomy.
    */
-  public function patterns_default_terms() {
+  public function Pattners_Default_Terms() {
     $taxonomy = 'pattern_type';
     $terms = array (
         '0' => array (
@@ -41,7 +41,7 @@ class Patterns__Activate {
   }
 
 
-  public function patterns_flush_rewrite() {
+  public function Patterns_Flush_Rewrite() {
       flush_rewrite_rules();
   }
 
