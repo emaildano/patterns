@@ -20,15 +20,22 @@ class Patterns__View_Functions {
     $html = '<section id="patterns-' . $section_id . '" class="patterns-type-section">';
 
       $html .= '<h1>' . $name . '</h1>';
+
       foreach($post_array as $post) {
         setup_postdata( $post );
 
+        echo 'hihihihihihi';
+
+        // Print Some Stuff!!
+        echo '<pre>'; print_r($post); echo '</pre>';
+
+
         $html .= '<p>' . get_the_title() . '</p>';
       }
-      wp_reset_postdata();
-
 
     $html .= '</section>';
+
+    wp_reset_postdata();
 
     echo $html;
   }

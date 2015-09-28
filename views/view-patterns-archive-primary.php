@@ -69,7 +69,7 @@ if( have_posts() ) :
   // Build the filter
   echo '<ul class="patterns-tab-bar">';
     if($color_posts) echo '<li><a href="#patterns-colors">Colors</a></li>';
-    if($typography_posts) echo '<li><a href="#patterns-typography">Typeography</a></li>';
+    if($typography_posts) echo '<li><a href="#patterns-typography">Typography</a></li>';
     if($pattern_types) {
       foreach($pattern_types as $pattern_type) {
         $type_id = urlencode($pattern_type);
@@ -84,20 +84,60 @@ if( have_posts() ) :
 
   // Colors
   if($color_posts) {
-    Patterns__View_Functions::Patterns_Archive_Part('Colors', $color_posts);
+    $html = '<section id="patterns-colors" class="patterns-type-section">';
+      $html .= '<h1>Colors</h1>';
+
+      foreach($color_posts as $post) {
+
+        setup_postdata( $post );
+        $meta = get_post_meta($post->ID);
+
+        // Print Some Stuff!!
+        echo '<pre>'; print_r($meta); echo '</pre>';
+
+        $html .= '<p>' . get_the_title() . '</p>';
+      }
+
+    $html .= '</section>';
+
+    wp_reset_postdata();
+
+    echo $html;
   }
+
+
+
+
+
 
   // Typeography
   if($typography_posts) {
-    Patterns__View_Functions::Patterns_Archive_Part('Typography', $typography_posts);
+    $html = '<section id="patterns-typography" class="patterns-type-section">';
+      $html .= '<h1>Typography</h1>';
+
+      foreach($typography_posts as $post) {
+
+        setup_postdata( $post );
+        $meta = get_post_meta($post->ID);
+
+        // Print Some Stuff!!
+        echo '<pre>'; print_r($meta); echo '</pre>';
+
+        $html .= '<p>' . get_the_title() . '</p>';
+      }
+
+    $html .= '</section>';
+
+    wp_reset_postdata();
+
+    echo $html;
   }
+
+
 
 
   // Pattern Types
   if($pattern_types) {
-
-    // Print Some Stuff!!
-    echo '<pre>'; print_r($pattern_types); echo '</pre>';
 
     foreach($pattern_types as $pattern_type) {
       $type_id = urlencode($pattern_type);
@@ -106,8 +146,55 @@ if( have_posts() ) :
 
         foreach($pattern_posts[$pattern_type] as $post) {
           setup_postdata( $post );
+          $meta   = get_post_meta($post->ID);
+          $code   = null;
+          $desc   = null;
 
-          echo '<p>' . get_the_title() . '</p>';
+
+          if( array_key_exists( '_Patterns__Main_code_value', $meta ) )
+            $code = $meta['_Patterns__Main_code_value'][0];
+
+          if( array_key_exists( '_Patterns__Main_desc_value', $meta ) )
+            $desc = $meta['_Patterns__Main_desc_value'][0];
+
+          ?>
+
+          <section class="patterns--entry">
+            <p><?= get_the_title() ?></p>
+
+            <?php if($code) : ?>
+
+              <!-- Start Code Output -->
+              <div class="patterns--pattern-display">
+                <?= html_entity_decode($code) ?>
+              </div>
+              <!-- End Code Output -->
+
+
+              <!-- Start Code Info -->
+              <div class="patterns--code-info">
+
+                <div class="patterns--code-info--code">
+                  <pre><code><?= $code ?></code></pre>
+                </div>
+
+                <?php if($desc) : ?>
+                  <div class="patterns--code-info--desc">
+                    <h4>Description</h4>
+                    <p><?= nl2br($desc) ?></p>
+                  </div>
+                <?php endif; ?>
+
+              </div>
+              <!-- End Code Info -->
+
+            <?php endif; ?>
+
+          </section>
+
+
+
+          <?php
         }
         wp_reset_postdata();
 
