@@ -84,10 +84,10 @@ class Patterns__Meta_Boxes {
 
     // Display the form, using the current value.
     echo '<label for="myplugin_new_field">';
-    _e( 'Description for this field', 'myplugin_textdomain' );
+    _e( 'Pattern Code', 'myplugin_textdomain' );
     echo '</label> ';
-    echo '<input type="text" id="myplugin_new_field" name="myplugin_new_field"';
-    echo ' value="' . esc_attr( $value ) . '" size="25" />';
+    echo '<textarea id="myplugin_new_field" name="myplugin_new_field"';
+    echo ' value="' . esc_attr( $value ) . '" style="width: 100%; min-height: 400px;"/>';
   }
 
 }
