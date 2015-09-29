@@ -58,4 +58,36 @@ class Patterns__View_Funcs {
   }
 
 
+  /**
+   * Returns
+   */
+  public function Patterns__Post_Main($post) {
+    $post_content = array();
+
+    $meta   = get_post_meta($post->ID);
+    $post_content['code']         = null;
+    $post_content['code_display'] = null;
+    $post_content['code_html']    = null;
+    $post_content['desc']         = null;
+    $post_content['desc_content'] = null;
+
+    if( array_key_exists( '_Patterns__Main_code_value', $meta ) ) {
+      $code = $meta['_Patterns__Main_code_value'][0];
+      if( !empty($code) ) $post_content['code'] = true;
+      $post_content['code_display'] = html_entity_decode($code);
+      $post_content['code_raw'] = $code;
+    }
+
+
+    if( array_key_exists( '_Patterns__Main_desc_value', $meta ) ) {
+      $desc = $meta['_Patterns__Main_desc_value'][0];
+      if( !empty($desc) ) $post_content['desc'] = true;
+      $post_content['desc_content'] = nl2br($desc);
+    }
+
+
+    return $post_content;
+  }
+
+
 }

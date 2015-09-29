@@ -86,6 +86,11 @@ class Patterns__Views_Init {
 
   public function Patterns_Enqueue_Styles() {
     if ( is_post_type_archive( 'patterns' ) ) {
+      $font_args = array(
+        'family' => 'Lato:300,400,900|Source+Code+Pro',
+        'subset' => 'latin,latin-ext'
+      );
+      wp_enqueue_style( 'google_fonts', add_query_arg( $font_args, "//fonts.googleapis.com/css" ), array(), null );
       wp_enqueue_style( 'patterns-css', plugins_url( 'assets/dist/css/styles.css', __DIR__ ) );
     }
   }

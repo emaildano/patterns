@@ -1,0 +1,89 @@
+.patterns--entry {
+
+  & + & {
+    border-top: 1px dotted $gray-30;
+    padding-top: 50px;
+  }
+
+  &:last-of-type {
+    border-bottom: 1px dotted $gray-30;
+  }
+}
+
+.patterns--entry-title {
+  padding-bottom: 20px;
+  border-bottom: 1px solid $gray-30;
+  display: inline-block;
+  margin: 0 0 10px;
+}
+
+// Code Display
+.patterns--pattern-display {
+  width: 100%;
+  padding-top: 20px;
+  padding-bottom: 30px;
+}
+
+
+// View More Link
+.patterns--toggle-wrapper {
+  text-align: center;
+}
+
+.patterns--js-code-toggle {
+  @extend %patterns-type-light;
+  font-size: 16px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  display: inline-block;
+  text-decoration: none;
+  color: $gray-10;
+  background: $gray-90;
+  padding: 6px 10px 8px;
+  margin-bottom: 30px;
+}
+
+
+// Entry Info
+.patterns--code-info {
+  background-color: $gray-10;
+  width: 100%;
+  overflow: hidden;
+  display: none;
+  margin-bottom: 50px;
+}
+
+.patterns--code-info--code {
+  @extend %patterns-type-mono;
+  font-size: 16px;
+  width: 70%;
+  float: left;
+  padding: 30px 15px 30px 30px;
+
+  &.patterns--no-desc {
+    width: 100%;
+    float: none;
+    padding: 30px;
+  }
+
+  pre {
+    border: 1px solid $gray-90;
+    padding: 20px;
+    background: $gray-20;
+    margin-top: 0;
+  }
+}
+
+.patterns--code-info--desc {
+  width: 30%;
+  float: left;
+  padding: 30px 30px 30px 15px;
+  @extend %patterns-type-light;
+
+  h4 {
+    @extend %patterns-type-bold;
+    text-transform: uppercase;
+    margin: 0 0 10px;
+  }
+}
+

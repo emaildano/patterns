@@ -61,10 +61,11 @@ gulp.task('js-watch', ['jshint', 'scripts'], browserSync.reload);
 // WATCH TASK
 gulp.task('serve', function() {
   browserSync.init({
-    proxy: "apollo.sandbox.dev"
+    proxy: "apollo.sandbox.dev",
+    port: 8080
   });
 
-  gulp.watch([path + 'sass/**/*'], ['style_task']);
-  gulp.watch([path + 'js/**/*'], ['js-watch']);
+  gulp.watch([path + 'sass/**/*.scss'], ['style_task']);
+  gulp.watch([path + 'js/**/*.js'], ['js-watch']);
   gulp.watch(['**/*.php', '**/*.html']).on('change', browserSync.reload);
 });

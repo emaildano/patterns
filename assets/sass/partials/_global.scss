@@ -1,0 +1,18 @@
+.patterns--wrapper {
+
+  * {
+    box-sizing: border-box;
+  }
+}
+
+.patterns--type-section {
+  display: none;
+
+  &.patterns--section-active {
+    display: block;
+  }
+}
+
+.patterns--section-wrapper {
+  margin-bottom: 100px;
+}

@@ -3,9 +3,10 @@ global $posts;
 global $post;
 
 if( have_posts() ) :
+  echo '<div class="patterns--wrapper">';
 
   // View Function Class
-  require ( trailingslashit( dirname( __FILE__ ) ) . 'view-patterns-view-functions.php' );
+  require ( trailingslashit( dirname( __FILE__ ) ) . 'class-patterns-view-functions.php' );
 
   $view = new Patterns__View_Funcs;
   $posts_ordered = $view->Patterns__Post_Sort( $posts );
@@ -26,15 +27,16 @@ if( have_posts() ) :
     $pattern_posts = $posts_ordered['patterns'];
 
 
+
   /**
    * Build the navigation
    */
   echo '<nav class="patterns--nav">';
     if($color_posts)
-      echo '<a href="#patterns-colors">Colors</a>';
+      echo '<a href="#patterns-colors" class="patterns--nav-link patterns--active">Colors</a>';
 
     if($typography_posts)
-      echo '<a href="#patterns-typography">Typography</a>';
+      echo '<a href="#patterns-typography" class="patterns--nav-link">Typography</a>';
 
     /**
      * Build Patterns nav based on patterns array keys.
@@ -43,8 +45,9 @@ if( have_posts() ) :
       $pattern_els = '';
 
       foreach($pattern_posts as $pattern_name=>$obj) {
-        $type_id = urlencode($pattern_name);
-        $nav_el = '<a href="#patterns-'. strtolower($type_id) . '">' . $pattern_name . '</a>';
+        $type_id = str_replace(' ', '-', $pattern_name);
+        preg_match('/^[a-z0-9 .\-]+$/i', $type_id);
+        $nav_el = '<a href="#patterns-'. strtolower($type_id) . '" class="patterns--nav-link">' . $pattern_name . '</a>';
 
         // If Basic Patterns exist, move to the top of the heap.
         if($pattern_name === 'Basic Patterns') {
@@ -59,128 +62,121 @@ if( have_posts() ) :
   echo '</nav>';
 
 
-  /*
+  echo '<div class="patterns--section-wrapper">';
+    // Colors
+    if($color_posts) {
+      $html = '<section id="patterns-colors" class="patterns--type-section">';
+        foreach($color_posts as $post) {
 
-
-  // Colors
-  if($color_posts) {
-    $html = '<section id="patterns-colors" class="patterns-type-section">';
-      $html .= '<h1>Colors</h1>';
-
-      foreach($color_posts as $post) {
-
-        setup_postdata( $post );
-        $meta = get_post_meta($post->ID);
-
-        // Print Some Stuff!!
-        echo '<pre>'; print_r($meta); echo '</pre>';
-
-        $html .= '<p>' . get_the_title() . '</p>';
-      }
-
-    $html .= '</section>';
-
-    wp_reset_postdata();
-
-    echo $html;
-  }
-
-
-
-
-
-
-  // Typeography
-  if($typography_posts) {
-    $html = '<section id="patterns-typography" class="patterns-type-section">';
-      $html .= '<h1>Typography</h1>';
-
-      foreach($typography_posts as $post) {
-
-        setup_postdata( $post );
-        $meta = get_post_meta($post->ID);
-
-        // Print Some Stuff!!
-        echo '<pre>'; print_r($meta); echo '</pre>';
-
-        $html .= '<p>' . get_the_title() . '</p>';
-      }
-
-    $html .= '</section>';
-
-    wp_reset_postdata();
-
-    echo $html;
-  }
-
-
-
-
-  // Pattern Types
-  if($pattern_types) {
-
-    foreach($pattern_types as $pattern_type) {
-      $type_id = urlencode($pattern_type);
-      echo '<section id="patterns-'. strtolower($type_id) . '" class="patterns-type-section">';
-        echo '<h1>' . $pattern_type . '</h1>';
-
-        foreach($pattern_posts[$pattern_type] as $post) {
           setup_postdata( $post );
-          $meta   = get_post_meta($post->ID);
-          $code   = null;
-          $desc   = null;
+          $meta = get_post_meta($post->ID);
+          $html .= '<p>' . get_the_title() . '</p>';
+        }
+
+      $html .= '</section>';
+
+      wp_reset_postdata();
+
+      echo $html;
+    }
 
 
-          if( array_key_exists( '_Patterns__Main_code_value', $meta ) )
-            $code = $meta['_Patterns__Main_code_value'][0];
-
-          if( array_key_exists( '_Patterns__Main_desc_value', $meta ) )
-            $desc = $meta['_Patterns__Main_desc_value'][0];
-
-          ?>
-
-          <section class="patterns--entry">
-            <p><?= get_the_title() ?></p>
-
-            <?php if($code) : ?>
-
-              <!-- Start Code Output -->
-              <div class="patterns--pattern-display">
-                <?= html_entity_decode($code) ?>
-              </div>
-              <!-- End Code Output -->
 
 
-              <!-- Start Code Info -->
-              <div class="patterns--code-info">
 
-                <div class="patterns--code-info--code">
-                  <pre><code><?= $code ?></code></pre>
+
+    // Typography
+    if($typography_posts) {
+      $html = '<section id="patterns-typography" class="patterns--type-section">';
+
+        foreach($typography_posts as $post) {
+
+          setup_postdata( $post );
+          $meta = get_post_meta($post->ID);
+          $html .= '<p>' . get_the_title() . '</p>';
+        }
+
+      $html .= '</section>';
+
+      wp_reset_postdata();
+
+      echo $html;
+    }
+
+
+
+
+    // Pattern Types
+    if($pattern_posts) {
+      $count = 1;
+
+      foreach($pattern_posts as $key=>$patterns) {
+        $type_id = str_replace(' ', '-', $key);
+        preg_match('/^[a-z0-9 .\-]+$/i', $type_id);
+        echo '<section id="patterns-'. strtolower($type_id) . '" class="patterns--type-section">';
+          // echo '<h1>' . $key . '</h1>';
+
+          foreach($patterns as $post) {
+            setup_postdata( $post );
+
+            $pattern = $view->Patterns__Post_Main( $post );
+            $code   = $pattern['code'];
+            $desc   = $pattern['desc'];
+
+            ?>
+
+            <section class="patterns--entry">
+              <h2 class="patterns--entry-title"><?= get_the_title() ?></h2>
+
+              <?php if($code) : ?>
+
+                <!-- Start Code Output -->
+                <div class="patterns--pattern-display">
+                  <?= $pattern['code_display'] ?>
+                </div>
+                <!-- End Code Output -->
+
+                <div class="patterns--toggle-wrapper">
+                  <a class="patterns--js-code-toggle" data-target="#patterns--code-info-<?= $count ?>" href="#">View Code</a>
                 </div>
 
-                <?php if($desc) : ?>
-                  <div class="patterns--code-info--desc">
-                    <h4>Description</h4>
-                    <p><?= nl2br($desc) ?></p>
+                <!-- Start Code Info -->
+                <div id="patterns--code-info-<?= $count ?>" class="patterns--code-info">
+
+                  <?php
+                    $class = 'patterns--code-info--code';
+                    if(!$desc) $class .= ' patterns--no-desc';
+                  ?>
+
+                  <div class="<?= $class ?>">
+                    <pre><code class="language-markup"><?= $pattern['code_raw'] ?></code></pre>
                   </div>
-                <?php endif; ?>
 
-              </div>
-              <!-- End Code Info -->
+                  <?php if($desc) : ?>
+                    <div class="patterns--code-info--desc">
+                      <h4>Description</h4>
+                      <p><?= $pattern['desc_content'] ?></p>
+                    </div>
+                  <?php endif; ?>
 
-            <?php endif; ?>
+                </div>
+                <!-- End Code Info -->
 
-          </section>
+              <?php endif; ?>
+
+            </section>
 
 
 
-          <?php
-        }
-        wp_reset_postdata();
+            <?php
+            $count++;
+          }
+          wp_reset_postdata();
 
-      echo '</section>';
+        echo '</section>';
+      }
     }
-  }
-  */
+  echo '</div>'; // Entry Wrapper
 
+  echo '</div>'; // Patterns Wrapper
 endif;

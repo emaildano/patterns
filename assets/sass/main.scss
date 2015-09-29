@@ -1,2 +1,13 @@
-@import 'partials/patterns-main';                 // Main Patterns Styles
+// Vars
+@import 'vars/colors';        // Color Vars
+@import 'vars/fonts';         // Font Vars
+
+// Extends
+@import 'extends/type';       // Type based extends
+
+// Partials
+@import 'partials/global';    // Global Patterns Styles
+@import 'partials/nav';       // Nav Style
+@import 'partials/entry';     // Single Entry Style
+@import 'partials/prism';     // Prism Code Markup Styles
 
