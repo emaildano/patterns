@@ -1,0 +1,42 @@
+{
+  "name": "Patterns",
+  "version": "0.0.1",
+  "description": "Wordpress Plugin for creating a Pattern Library",
+  "authors": [
+    {
+      "name": "Shaun Baer",
+      "email": "shaun.baer@gmail.com",
+      "homepage": "https://github.com/iamhexcoder"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/iamhexcoder/patterns.git"
+  },
+  "bugs": {
+    "url": "https://github.com/iamhexcoder/patterns/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://opensource.org/licenses/MIT"
+    }
+  ],
+  "engines": {
+    "node": ">= 0.10.0",
+    "npm": ">=2.1.5"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-load-plugins": "^1.0.0-rc",
+    "gulp-plumber": "^1.0.1",
+    "gulp-sass": "^2.0.4",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-autoprefixer": "^3.0.2",
+    "gulp-minify-css": "^1.2.1",
+    "gulp-jshint": "^1.11.2",
+    "jshint-stylish": "^2.0.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-uglify": "^1.4.1"
+  }
+}
