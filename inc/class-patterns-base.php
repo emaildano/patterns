@@ -17,19 +17,19 @@ class Patterns__Base {
   public $_patterns_option_slug;
   public $_patterns_slug;
 
-  /**
-   * Get slug option,
-   */
   public function __construct() {
     $this->_patterns_slug = $this->Patterns_Slug();
 
+    // CPTs
     add_action( 'init', array( $this, 'Patterns_Primary_CPT' ) );
     add_action( 'init', array( $this, 'Patterns_Colors_CPT' ) );
     add_action( 'init', array( $this, 'Patterns_Typography_CPT' ) );
     add_action( 'init', array( $this, 'Patterns_Taxonomy' ) );
 
+    // Settings Page
     add_action( 'admin_init', array( $this, 'Patterns_Settings_Init' ) );
 
+    // Admin Menu
     add_action( 'admin_menu', array( $this, 'Patterns_Add_Admin_Menu' ) );
     add_action('admin_menu', array( $this, 'Patterns_Hide_Add_New') );
   }
@@ -74,7 +74,7 @@ class Patterns__Base {
   }
 
   /**
-   *  Colors
+   *  Colors CPT
    */
 
   public function Patterns_Colors_CPT() {
@@ -103,7 +103,7 @@ class Patterns__Base {
 
 
   /**
-   *  Typography
+   *  Typography CPT
    */
 
   public function Patterns_Typography_CPT() {
@@ -132,7 +132,7 @@ class Patterns__Base {
 
 
   /**
-   * Taxonomy
+   * Pattern Type Taxonomy
    */
   public function Patterns_Taxonomy() {
 
@@ -161,10 +161,11 @@ class Patterns__Base {
 
 
   /**
-   * OPTIONS
-   *
-   *
-   * Add Options page to Patterns CPT menu item
+   * SETTINGS PAGE
+   */
+
+  /**
+   * Add Settings page to Patterns CPT menu item
    */
   public function Patterns_Add_Admin_Menu() {
     add_submenu_page( 'edit.php?post_type=patterns', 'Settings', 'Settings', 'manage_options', 'patterns', array( $this, 'patterns_options_page') );
@@ -199,7 +200,7 @@ class Patterns__Base {
 
 
   /**
-   * Description of Options Page
+   * Description of Settings Page
    */
   public function patterns_settings_section_callback() {
     echo __( 'Basic Settings for Patterns', 'wordpress' );
