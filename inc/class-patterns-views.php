@@ -80,13 +80,13 @@ class Patterns__Views_Init {
    */
   public function Patterns_Enqueue_Scripts() {
     if ( is_post_type_archive( 'patterns' ) ) {
-      wp_enqueue_script( 'patterns-scripts', plugins_url( 'assets/js/patterns.js', __DIR__ ), array('jquery'), true );
+      wp_enqueue_script( 'patterns-scripts', plugins_url( 'assets/dist/js/patterns.display.js', __DIR__ ), array('jquery'), true );
     }
   }
 
   public function Patterns_Enqueue_Styles() {
     if ( is_post_type_archive( 'patterns' ) ) {
-      wp_enqueue_style( 'patterns-css', plugins_url( 'assets/css/styles.css', __DIR__ ) );
+      wp_enqueue_style( 'patterns-css', plugins_url( 'assets/dist/css/styles.css', __DIR__ ) );
     }
   }
 
