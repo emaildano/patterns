@@ -87,20 +87,11 @@ if( have_posts() ) :
 
     // Typography
     if($typography_posts) {
-      $html = '<section id="patterns-typography" class="patterns--type-section">';
+      echo '<section id="patterns-typography" class="patterns--type-section">';
 
-        foreach($typography_posts as $post) {
-
-          setup_postdata( $post );
-          $meta = get_post_meta($post->ID);
-          $html .= '<p>' . get_the_title() . '</p>';
-        }
-
-      $html .= '</section>';
-
-      wp_reset_postdata();
-
-      echo $html;
+        include_once( trailingslashit( dirname( __FILE__ ) ) . 'view-patterns-typography.php' );
+        wp_reset_postdata();
+      echo '</section>';
     }
 
 

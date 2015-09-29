@@ -295,11 +295,6 @@ class Patterns__Meta_Boxes {
             }
           echo '</select>';
 
-
-
-          // echo '<input id="patterns_typography_tag_value" value="' . esc_attr($tag_value) . '" name="patterns_typography_tag_value" class="all-options"/>';
-
-
         echo '</td>';
       echo '</tr>';
     echo '</tbody></table>';
