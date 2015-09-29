@@ -7,60 +7,61 @@ if( have_posts() ) :
   // View Function Class
   require ( trailingslashit( dirname( __FILE__ ) ) . 'view-patterns-view-functions.php' );
 
-  // Vars
-  $pattern_posts    = array();
-  $color_posts      = array();
-  $typography_posts = array();
-  $pattern_types    = array();
+  $view = new Patterns__View_Funcs;
+  $posts_order = $view->Patterns__Post_Sort( $posts );
 
 
+  // Print Some Stuff!!
+  echo '<pre>'; print_r($posts_order); echo '</pre>';
 
 
+  // // Vars
+  // $pattern_posts    = array();
+  // $color_posts      = array();
+  // $typography_posts = array();
+  // $pattern_types    = array();
 
-  // Sort by Post Type
-  foreach($posts as $entry) {
-    $type = $entry->post_type;
+  // // Sort by Post Type
+  // foreach($posts as $entry) {
+  //   $type = $entry->post_type;
 
-    if( $entry->post_type === 'patterns_colors' ) {
-      $color_posts[] = $entry;
-    } elseif( $entry->post_type === 'patterns_typography' ) {
-      $typography_posts[] = $entry;
-    } else {
-      $pattern_posts[] = $entry;
-    }
-  }
-
-
+  //   if( $entry->post_type === 'patterns_colors' ) {
+  //     $color_posts[] = $entry;
+  //   } elseif( $entry->post_type === 'patterns_typography' ) {
+  //     $typography_posts[] = $entry;
+  //   } else {
+  //     $pattern_posts[] = $entry;
+  //   }
+  // }
 
 
+  // // Sort Patterns by Type
+  // foreach($pattern_posts as $key=>$pattern) {
+  //   // $obj = $pattern;
+  //   $types = get_the_terms( $pattern->ID, 'pattern_type' );
 
-  // Sort Patterns by Type
-  foreach($pattern_posts as $key=>$pattern) {
-    // $obj = $pattern;
-    $types = get_the_terms( $pattern->ID, 'pattern_type' );
+  //   if($types) {
+  //     foreach($types as $type) {
+  //       $type_name = $type->name;
 
-    if($types) {
-      foreach($types as $type) {
-        $type_name = $type->name;
+  //       if(!in_array($type_name, $pattern_types)) {
+  //         $pattern_types[] = $type_name;
+  //       }
 
-        if(!in_array($type_name, $pattern_types)) {
-          $pattern_types[] = $type_name;
-        }
+  //       // Sort
+  //       unset($pattern_posts[$key]); // remove pattern from list
+  //       $pattern_posts[$type_name][] = $pattern;
 
-        // Sort
-        unset($pattern_posts[$key]); // remove pattern from list
-        $pattern_posts[$type_name][] = $pattern;
+  //     }
+  //   } else {
+  //     unset($pattern_posts[$key]); // remove pattern from list
+  //     $pattern_posts['Basic Patterns'][] = $pattern;
+  //     if( !in_array('Basic Patterns', $pattern_types) ) {
+  //       $pattern_types[] = 'Basic Patterns';
+  //     }
+  //   }
 
-      }
-    } else {
-      unset($pattern_posts[$key]); // remove pattern from list
-      $pattern_posts['Basic Patterns'][] = $pattern;
-      if( !in_array('Basic Patterns', $pattern_types) ) {
-        $pattern_types[] = 'Basic Patterns';
-      }
-    }
-
-  }
+  // }
 
 
 

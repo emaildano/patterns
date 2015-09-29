@@ -72,7 +72,6 @@ class Patterns__Meta_Boxes {
     // Sanitize the user input.
     $code_data  = esc_html( $_POST['patterns_code_content'] );
     $desc_data  = esc_textarea( $_POST['patterns_code_desc'] );
-    $usage_data = $_POST['patterns_code_usage'];
 
     // Update the meta field.
     update_post_meta( $post_id, '_Patterns__Main_code_value', $code_data );

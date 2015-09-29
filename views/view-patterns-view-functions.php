@@ -11,33 +11,51 @@
  * @author     Shaun Baer <shaun.baer@gmail.com>
  */
 
-class Patterns__View_Functions {
+class Patterns__View_Funcs {
 
-  public static function Patterns_Archive_Part($name, $post_array) {
-    $section_id = strtolower($name);
-    $section_id = str_replace(' ', '-', $section_id);
+  /**
+   * Order Post Types
+   *
+   * @param array $posts
+   */
+  public function Patterns__Post_Sort( $posts ) {
+    $posts_array = array();
 
-    $html = '<section id="patterns-' . $section_id . '" class="patterns-type-section">';
+    /**
+     * Order Posts by Post Type
+     */
+    foreach($posts as $entry) {
+      $type = $entry->post_type;
+      $posts_array[$type][] = $entry;
+    }
 
-      $html .= '<h1>' . $name . '</h1>';
+    /**
+     * Sort pattern posts by taxonomy.
+     *
+     * Remove post from $post_array[patterns], and add post to
+     * $post_array[patterns][taxonomy_key].
+     *
+     * If a taxonomy does not exist, sort it into a default key.
+     */
+    if($posts_array['patterns']) {
+      foreach($posts_array['patterns'] as $key=>$pattern) {
+        $types = get_the_terms( $pattern->ID, 'pattern_type' );
 
-      foreach($post_array as $post) {
-        setup_postdata( $post );
-
-        echo 'hihihihihihi';
-
-        // Print Some Stuff!!
-        echo '<pre>'; print_r($post); echo '</pre>';
-
-
-        $html .= '<p>' . get_the_title() . '</p>';
+        if($types) {
+          foreach($types as $type) {
+            $type_name = $type->name;
+            unset($posts_array['patterns'][$key]);
+            $posts_array['patterns'][$type_name][] = $pattern;
+          }
+        } else {
+          unset($posts_array['patterns'][$key]);
+          $posts_array['patterns']['Basic Patterns'][] = $pattern;
+        }
       }
+    }
 
-    $html .= '</section>';
-
-    wp_reset_postdata();
-
-    echo $html;
+    return $posts_array;
   }
+
 
 }
