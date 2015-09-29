@@ -1,4 +1,6 @@
 <?php
+get_header();
+
 global $posts;
 global $post;
 
@@ -171,3 +173,5 @@ if( have_posts() ) :
 
   echo '</div>'; // Patterns Wrapper
 endif;
+
+get_footer();
