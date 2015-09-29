@@ -8,11 +8,11 @@ if( have_posts() ) :
   require ( trailingslashit( dirname( __FILE__ ) ) . 'view-patterns-view-functions.php' );
 
   $view = new Patterns__View_Funcs;
-  $posts_order = $view->Patterns__Post_Sort( $posts );
+  $posts_ordered = $view->Patterns__Post_Sort( $posts );
 
 
   // Print Some Stuff!!
-  echo '<pre>'; print_r($posts_order); echo '</pre>';
+  echo '<pre>'; print_r($posts_ordered); echo '</pre>';
 
 
   // // Vars
@@ -69,18 +69,21 @@ if( have_posts() ) :
 
   // Build the filter
   echo '<ul class="patterns-tab-bar">';
-    if($color_posts) echo '<li><a href="#patterns-colors">Colors</a></li>';
-    if($typography_posts) echo '<li><a href="#patterns-typography">Typography</a></li>';
-    if($pattern_types) {
-      foreach($pattern_types as $pattern_type) {
-        $type_id = urlencode($pattern_type);
-        echo '<li><a href="#patterns-'. strtolower($type_id) . '">' . $pattern_type . '</a></li>';
+    if($posts_ordered['patterns_colors'])
+      echo '<li><a href="#patterns-colors">Colors</a></li>';
+    if($posts_ordered['patterns_typography'])
+      echo '<li><a href="#patterns-typography">Typography</a></li>';
+    if($posts_ordered['patterns']) {
+
+      foreach($posts_ordered['patterns'] as $pattern_name=>$obj) {
+        $type_id = urlencode($pattern_name);
+        echo '<li><a href="#patterns-'. strtolower($type_id) . '">' . $pattern_name . '</a></li>';
       }
     }
   echo '</ul>';
 
 
-
+  /*
 
 
   // Colors
@@ -202,5 +205,6 @@ if( have_posts() ) :
       echo '</section>';
     }
   }
+  */
 
 endif;

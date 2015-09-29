@@ -54,6 +54,12 @@ class Patterns__View_Funcs {
       }
     }
 
+    if( $posts_array['patterns']['Basic Patterns'] ) {
+      $basic_patterns = $posts_array['patterns']['Basic Patterns'];
+      unset($posts_array['patterns']['Basic Patterns']);
+      array_unshift($posts_array['patterns'], $basic_patterns);
+    }
+
     return $posts_array;
   }
 
