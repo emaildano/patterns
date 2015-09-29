@@ -10,77 +10,53 @@ if( have_posts() ) :
   $view = new Patterns__View_Funcs;
   $posts_ordered = $view->Patterns__Post_Sort( $posts );
 
+  /**
+   * Break apart the ordered post to make life easier
+   * @var null  if key exists, @var is array
+   */
+  $color_posts      = null;
+  $typography_posts = null;
+  $pattern_posts    = null;
 
-  // Print Some Stuff!!
-  echo '<pre>'; print_r($posts_ordered); echo '</pre>';
-
-
-  // // Vars
-  // $pattern_posts    = array();
-  // $color_posts      = array();
-  // $typography_posts = array();
-  // $pattern_types    = array();
-
-  // // Sort by Post Type
-  // foreach($posts as $entry) {
-  //   $type = $entry->post_type;
-
-  //   if( $entry->post_type === 'patterns_colors' ) {
-  //     $color_posts[] = $entry;
-  //   } elseif( $entry->post_type === 'patterns_typography' ) {
-  //     $typography_posts[] = $entry;
-  //   } else {
-  //     $pattern_posts[] = $entry;
-  //   }
-  // }
+  if( $posts_ordered['patterns_colors'] )
+    $color_posts = $posts_ordered['patterns_colors'];
+  if( $posts_ordered['patterns_typography'] )
+    $typography_posts = $posts_ordered['patterns_typography'];
+  if( $posts_ordered['patterns'] )
+    $pattern_posts = $posts_ordered['patterns'];
 
 
-  // // Sort Patterns by Type
-  // foreach($pattern_posts as $key=>$pattern) {
-  //   // $obj = $pattern;
-  //   $types = get_the_terms( $pattern->ID, 'pattern_type' );
+  /**
+   * Build the navigation
+   */
+  echo '<nav class="patterns--nav">';
+    if($color_posts)
+      echo '<a href="#patterns-colors">Colors</a>';
 
-  //   if($types) {
-  //     foreach($types as $type) {
-  //       $type_name = $type->name;
+    if($typography_posts)
+      echo '<a href="#patterns-typography">Typography</a>';
 
-  //       if(!in_array($type_name, $pattern_types)) {
-  //         $pattern_types[] = $type_name;
-  //       }
+    /**
+     * Build Patterns nav based on patterns array keys.
+     */
+    if($pattern_posts) {
+      $pattern_els = '';
 
-  //       // Sort
-  //       unset($pattern_posts[$key]); // remove pattern from list
-  //       $pattern_posts[$type_name][] = $pattern;
-
-  //     }
-  //   } else {
-  //     unset($pattern_posts[$key]); // remove pattern from list
-  //     $pattern_posts['Basic Patterns'][] = $pattern;
-  //     if( !in_array('Basic Patterns', $pattern_types) ) {
-  //       $pattern_types[] = 'Basic Patterns';
-  //     }
-  //   }
-
-  // }
-
-
-
-
-
-  // Build the filter
-  echo '<ul class="patterns-tab-bar">';
-    if($posts_ordered['patterns_colors'])
-      echo '<li><a href="#patterns-colors">Colors</a></li>';
-    if($posts_ordered['patterns_typography'])
-      echo '<li><a href="#patterns-typography">Typography</a></li>';
-    if($posts_ordered['patterns']) {
-
-      foreach($posts_ordered['patterns'] as $pattern_name=>$obj) {
+      foreach($pattern_posts as $pattern_name=>$obj) {
         $type_id = urlencode($pattern_name);
-        echo '<li><a href="#patterns-'. strtolower($type_id) . '">' . $pattern_name . '</a></li>';
+        $nav_el = '<a href="#patterns-'. strtolower($type_id) . '">' . $pattern_name . '</a>';
+
+        // If Basic Patterns exist, move to the top of the heap.
+        if($pattern_name === 'Basic Patterns') {
+          $pattern_els = $nav_el . $pattern_els;
+        } else {
+          $pattern_els .= $nav_el;
+        }
       }
+
+      echo $pattern_els;
     }
-  echo '</ul>';
+  echo '</nav>';
 
 
   /*
