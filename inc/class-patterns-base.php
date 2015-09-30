@@ -299,7 +299,6 @@ class Patterns__Base {
 
     $html = '<select name="patterns_settings[patterns_compiler]">';
       $html .= '<option value="sass"' . selected( $options['patterns_compiler'], 'sass', false) . '>sass</option>';
-      $html .= '<option value="less"' . selected( $options['patterns_compiler'], 'less', false) . '>less</option>';
       $html .= '<option value="css"' . selected( $options['patterns_compiler'], 'css', false) . '>css</option>';
     $html .= '</select>';
     $html .= '<p class="description">Select a compiler for use in generating code for Colors.</p>';
@@ -311,7 +310,6 @@ class Patterns__Base {
    * Build the options page
    */
   public function Patterns_Settings() {
-    $compiler_text = $this->Patterns_Style_Output();
 
     echo '<form action="options.php" method="post">';
       settings_fields( 'patterns_plugin_page' );
@@ -319,15 +317,25 @@ class Patterns__Base {
       submit_button();
     echo '</form>';
 
+    $compiler_text = $this->Patterns_Style_Output();
+
     if($compiler_text) {
       echo $compiler_text;
     }
 
     // Flush them rules
     flush_rewrite_rules();
+
   }
 
+
+  /**
+   * Determine the Compiler Output
+   */
   public function Patterns_Style_Output() {
+    // View Function Class
+    require ( trailingslashit( dirname( __DIR__ ) ) . 'views/class-patterns-view-functions.php' );
+
     $values = array();
     $html = '';
 
@@ -343,13 +351,13 @@ class Patterns__Base {
     // Add Color Value to Values array
     if($colors) {
       $values = array();
+      $compiler_content = '';
 
       foreach($colors as $color) {
-        $value = get_post_meta($color->ID, 'patterns_color_value', true);
-        $class = str_replace('$', '', $value);  // sass vars
-        $class = str_replace('@', '', $class);  // less vars
-        $class = str_replace(' ', '-', $class); // make classy
-        $values[$value] = $class;
+        $view = new Patterns__View_Funcs;
+        $color_info = $view->Patterns__Colors_Class($color);
+        $value = key($color_info);
+        $values[$value] = $color_info[$value];
       }
 
       $value_count = count($values);
@@ -370,23 +378,33 @@ class Patterns__Base {
         foreach($values as $value => $class) {
           if($step >= $value_count) $sep = '';
           $color_list .= '"' . $class . '"' . $sep;
-          $vars_list .= '"' . $value . '"' . $sep;
+          $vars_list .= $value . $sep;
           $step++;
         }
 
-        $compiler_content = '$colors-list = ' . $color_list . ';' . "\n";
-        $compiler_content .= '$vars-list = ' . $vars_list . ';' . "\n";
+        $compiler_content .= '$colors-list: ' . $color_list . ';' . "\n";
+        $compiler_content .= '$vars-list: ' . $vars_list . ';' . "\n";
         $compiler_content .= "\n";
         $compiler_content .= '// Loop through lists to output classes with background color' . "\n";
         $compiler_content .= '@each $current-color in $colors-list {' . "\n";
         $compiler_content .= '  $i: index($colors-list, $current-color);' . "\n";
-        $compiler_content .= '  .pattern-color-#{$current-color} {' . "\n";
-        $compiler_content .= '    background: nth($vars-list, $i);' . "\n";
+        $compiler_content .= '  .patterns--colors-#{$current-color} {' . "\n";
+        $compiler_content .= '    background-color: nth($vars-list, $i);' . "\n";
         $compiler_content .= '  }' . "\n";
         $compiler_content .= '}' . "\n";
 
       } else {
-        $compiler_content = 'some stuff';
+        $sep = "\n";
+        $step = 1;
+
+        foreach($values as $value => $class) {
+          if($step >= $value_count) $sep = '';
+
+          $compiler_content .= '.patterns--colors-' . $class . ' {' . "\n";
+          $compiler_content .= '  background-color: ' . $value . ';' . "\n";
+          $compiler_content .= '}' . "\n";
+          $compiler_content .= $sep;
+        }
       }
 
       $html .= '<div class="wrap">';

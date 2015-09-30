@@ -90,4 +90,18 @@ class Patterns__View_Funcs {
   }
 
 
+  /**
+   * Set the name of a Color value to a class
+   */
+  public function Patterns__Colors_Class($color) {
+    $value = get_post_meta($color->ID, 'patterns_color_value', true);
+    $class = str_replace('$', '', $value);  // sass vars
+    $class = str_replace('@', '', $class);  // less vars
+    $class = str_replace('#', '', $class);  // hex values
+    $class = str_replace(' ', '-', $class); // make classy
+
+    return array($value => $class);
+
+  }
+
 }

@@ -87,3 +87,21 @@
   }
 }
 
+
+
+
+
+
+
+$colors-list: "gray-50", "gray-20";
+$vars-list: $gray-50, $gray-20;
+
+// Loop through lists to output classes with background color
+@each $current-color in $colors-list {
+  $i: index($colors-list, $current-color);
+  .patterns--colors-#{$current-color} {
+    background-color: nth($vars-list, $i);
+  }
+}
+
+

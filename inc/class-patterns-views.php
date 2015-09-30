@@ -72,17 +72,23 @@ class Patterns__Views_Init {
       return;
 
     if ( is_post_type_archive( 'patterns' ) ) {
+      $post_types = array(
+        'patterns',
+        'patterns_colors',
+        'patterns_typography'
+      );
+
       $options = get_option( 'patterns_settings' );
 
-      $post_types = array();
-      $post_types[] = 'patterns';
+      if(is_array($options)) {
 
-      if( !array_key_exists('patterns_colors', $options) ) {
-        $post_types[] = 'patterns_colors';
-      }
+        if( array_key_exists('patterns_colors', $options ) ) {
+          unset($post_types[1]);
+        }
 
-      if( !array_key_exists('patterns_typography', $options) ) {
-        $post_types[] = 'patterns_typography';
+        if( array_key_exists('patterns_typography', $options) ) {
+          unset($post_types[2]);
+        }
       }
 
 
