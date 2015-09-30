@@ -1,7 +1,9 @@
 <?php
 
 /**
- * Creates the Patterns Views
+ * Archive Template
+ * Redirect for Single
+ *
  *
  * @link       https://github.com/iamhexcoder
  * @since      1.0.0
@@ -50,7 +52,12 @@ class Patterns__Views_Init {
    */
   public function Patterns_Single_Redirect() {
 
-    if ( is_singular( Patterns__Main::$_patterns_post_types ) ) {
+    if ( is_singular( array('patterns', 'patterns_colors', 'patterns_typography') ) ) {
+      wp_redirect( get_post_type_archive_link( 'patterns' ), 301 );
+      exit;
+    }
+
+    if ( is_post_type_archive( array('patterns_colors', 'patterns_typography') ) ) {
       wp_redirect( get_post_type_archive_link( 'patterns' ), 301 );
       exit;
     }
@@ -65,8 +72,22 @@ class Patterns__Views_Init {
       return;
 
     if ( is_post_type_archive( 'patterns' ) ) {
+      $options = get_option( 'patterns_settings' );
+
+      $post_types = array();
+      $post_types[] = 'patterns';
+
+      if( !array_key_exists('patterns_colors', $options) ) {
+        $post_types[] = 'patterns_colors';
+      }
+
+      if( !array_key_exists('patterns_typography', $options) ) {
+        $post_types[] = 'patterns_typography';
+      }
+
+
       // Return all posts
-      $query->set( 'post_type', array('patterns', 'patterns_colors', 'patterns_typography') );
+      $query->set( 'post_type', $post_types );
       $query->set( 'posts_per_page', -1 );
       $query->set( 'order', 'ASC' );
       $query->set( 'orderby', 'menu_order' );

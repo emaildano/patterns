@@ -21,9 +21,9 @@ if( have_posts() ) :
   $typography_posts = null;
   $pattern_posts    = null;
 
-  if( $posts_ordered['patterns_colors'] )
+  if( array_key_exists('patterns_colors', $posts_ordered ) )
     $color_posts = $posts_ordered['patterns_colors'];
-  if( $posts_ordered['patterns_typography'] )
+  if( array_key_exists('patterns_typography', $posts_ordered ) )
     $typography_posts = $posts_ordered['patterns_typography'];
   if( $posts_ordered['patterns'] )
     $pattern_posts = $posts_ordered['patterns'];
@@ -68,10 +68,29 @@ if( have_posts() ) :
     // Colors
     if($color_posts) {
       $html = '<section id="patterns-colors" class="patterns--type-section">';
+        $values = array();
+
+        foreach($color_posts as $color) {
+          $value = get_post_meta($color->ID, 'patterns_color_value', true);
+          $class = str_replace('$', '', $value);  // sass vars
+          $class = str_replace('@', '', $class);  // less vars
+          $class = str_replace(' ', '-', $class); // make classy
+          $values[$value] = $class;
+        }
+
+
+        // Print Some Stuff!!
+        echo '<pre>'; print_r($values); echo '</pre>';
+
+
         foreach($color_posts as $post) {
 
           setup_postdata( $post );
           $meta = get_post_meta($post->ID);
+
+          // Print Some Stuff!!
+          echo '<pre>'; print_r($meta); echo '</pre>';
+
           $html .= '<p>' . get_the_title() . '</p>';
         }
 

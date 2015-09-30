@@ -174,7 +174,7 @@ class Patterns__Meta_Boxes {
     $color_value  = sanitize_text_field( $_POST['patterns_color_value'] );
 
     // Update the meta field.
-    update_post_meta( $post_id, '_Patterns__Colors_color_value', $color_value );
+    update_post_meta( $post_id, 'patterns_color_value', $color_value );
   }
 
 
@@ -189,7 +189,7 @@ class Patterns__Meta_Boxes {
     wp_nonce_field( 'patterns_colors_inner_custom_box', 'patterns_colors_inner_custom_box_nonce' );
 
     // Use get_post_meta to retrieve an existing value from the database.
-    $color_value = get_post_meta( $post->ID, '_Patterns__Colors_color_value', true );
+    $color_value = get_post_meta( $post->ID, 'patterns_color_value', true );
 
     // Display the form, using the current value.
     echo '<label for="patterns_color_value">Pattern Color Value</label> ';

@@ -1,7 +1,9 @@
 <?php
 
 /**
- * Creates the Patterns Custom Post Type and Taxonomy
+ * Creates the Patterns Custom Post Type
+ * Creates the Patterns 'Pattern Type' Taxonomy
+ * Creates the Settings Page
  *
  * @link       https://github.com/iamhexcoder
  * @since      1.0.0
@@ -249,27 +251,11 @@ class Patterns__Base {
   }
 
   /**
-   * Create Select for CSS Compiler
-   */
-  public function Patterns_CSS_Compiler_Render() {
-    $options = $this->_patterns_options;
-    if( !isset( $options['patterns_compiler'] ) ) $options['patterns_compiler'] = 'css';
-
-    $html = '<select name="patterns_settings[patterns_compiler]">';
-      $html .= '<option value="sass"' . selected( $options['patterns_compiler'], 'sass', false) . '>sass</option>';
-      $html .= '<option value="less"' . selected( $options['patterns_compiler'], 'less', false) . '>less</option>';
-      $html .= '<option value="css"' . selected( $options['patterns_compiler'], 'css', false) . '>css</option>';
-    $html .= '</select>';
-    $html .= '<p class="description">Select a compiler for use in generating code for Colors.</p>';
-    echo $html;
-  }
-
-  /**
    * Create Checkbox for Colors Display
    */
   public function Patterns_Color_Display_Render() {
-    if ( ! isset( $this->_patterns_options['patterns_colors'] ) )
-      $this->_patterns_options['patterns_colors'] = 0;
+    if ( ! isset( $this->_patterns_options['patterns_colors'] ) ) $this->_patterns_options['patterns_colors'] = 0;
+
     $html = '<input type="checkbox" name="patterns_settings[patterns_colors]" value="1"' . checked( 1, $this->_patterns_options['patterns_colors'], false ) . '/>';
     $html .= '<p class="description">Check if you wish not to display colors.</p>';
     echo $html;
@@ -279,8 +265,8 @@ class Patterns__Base {
    * Create Checkbox for Typography Display
    */
   public function Patterns_Typeography_Option_Render() {
-    if ( !isset( $this->_patterns_options['patterns_typography'] ) )
-      $this->_patterns_options['patterns_typography'] = 0;
+    if ( !isset( $this->_patterns_options['patterns_typography'] ) ) $this->_patterns_options['patterns_typography'] = 0;
+
     $html = '<input type="checkbox" name="patterns_settings[patterns_typography]" value="1"' . checked( 1, $this->_patterns_options['patterns_typography'], false ) . '/>';
     $html .= '<p class="description">Check if you wish not to display typography.</p>';
     echo $html;
@@ -295,8 +281,28 @@ class Patterns__Base {
     } else {
       $wrapper = $this->_patterns_options['patterns_wrapper_class'];
     }
+
     $html = '<input type="text" name="patterns_settings[patterns_wrapper_class]" value="' .  $wrapper . '">';
     $html .= '<p class="description">The class used to wrap main body content.</p>';
+    echo $html;
+  }
+
+
+  /**
+   * Create Select for CSS Compiler
+   */
+  public function Patterns_CSS_Compiler_Render() {
+    $options = $this->_patterns_options;
+    if( !isset( $options['patterns_compiler'] ) ) $options['patterns_compiler'] = 'css';
+
+
+
+    $html = '<select name="patterns_settings[patterns_compiler]">';
+      $html .= '<option value="sass"' . selected( $options['patterns_compiler'], 'sass', false) . '>sass</option>';
+      $html .= '<option value="less"' . selected( $options['patterns_compiler'], 'less', false) . '>less</option>';
+      $html .= '<option value="css"' . selected( $options['patterns_compiler'], 'css', false) . '>css</option>';
+    $html .= '</select>';
+    $html .= '<p class="description">Select a compiler for use in generating code for Colors.</p>';
     echo $html;
   }
 
@@ -305,14 +311,67 @@ class Patterns__Base {
    * Build the options page
    */
   public function Patterns_Settings() {
+    $compiler_text = $this->Patterns_Style_Output();
+
     echo '<form action="options.php" method="post">';
       settings_fields( 'patterns_plugin_page' );
       do_settings_sections( 'patterns_plugin_page' );
       submit_button();
     echo '</form>';
 
+    if($compiler_text) {
+      echo $compiler_text;
+    }
+
     // Flush them rules
     flush_rewrite_rules();
+  }
+
+  public function Patterns_Style_Output() {
+    $values = array();
+    $html = '';
+
+    $args = array(
+      'post_type' => 'patterns_colors',
+      'posts_per_page' => -1,
+      'orderby' => 'menu_order',
+      'order' => 'ASC'
+    );
+
+    $colors = get_posts( $args );
+
+    // Add Color Value to Values array
+    if($colors) {
+      $values = array();
+
+      foreach($colors as $color) {
+        $value = get_post_meta($color->ID, 'patterns_color_value', true);
+        $class = str_replace('$', '', $value);  // sass vars
+        $class = str_replace('@', '', $class);  // less vars
+        $class = str_replace(' ', '-', $class); // make classy
+        $values[$value] = $class;
+      }
+
+      if( array_key_exists('patterns_compiler', $this->_patterns_options) ) {
+        $compiler = $this->_patterns_options['patterns_compiler'];
+      } else {
+        $compiler = 'css';
+      }
+
+      $compiler_content = 'some stuff';
+
+      $html .= '<div class="wrap">';
+
+        $html .= '<h4>Copy and Paste into your ' . $compiler . ' file</h4>';
+        $html .= '<textarea rows="10" cols="30" class="large-text code">';
+          $html .= $compiler_content;
+        $html .= '</textarea>';
+
+      $html .= '</div>';
+
+    }
+
+    return $html;
   }
 }
 
