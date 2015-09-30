@@ -299,6 +299,7 @@ class Patterns__Base {
 
     $html = '<select name="patterns_settings[patterns_compiler]">';
       $html .= '<option value="sass"' . selected( $options['patterns_compiler'], 'sass', false) . '>sass</option>';
+      $html .= '<option value="less"' . selected( $options['patterns_compiler'], 'less', false) . '>less</option>';
       $html .= '<option value="css"' . selected( $options['patterns_compiler'], 'css', false) . '>css</option>';
     $html .= '</select>';
     $html .= '<p class="description">Select a compiler for use in generating code for Colors.</p>';
@@ -352,6 +353,10 @@ class Patterns__Base {
     if($colors) {
       $values = array();
       $compiler_content = '';
+      $color_list = '';
+      $vars_list = '';
+      $sep = ', ';
+      $step = 1;
 
       foreach($colors as $color) {
         $view = new Patterns__View_Funcs;
@@ -370,10 +375,6 @@ class Patterns__Base {
 
       // SASS
       if($compiler === 'sass') {
-        $color_list = '';
-        $vars_list = '';
-        $sep = ', ';
-        $step = 1;
 
         foreach($values as $value => $class) {
           if($step >= $value_count) $sep = '';
@@ -393,12 +394,40 @@ class Patterns__Base {
         $compiler_content .= '  }' . "\n";
         $compiler_content .= '}' . "\n";
 
-      } else {
-        $sep = "\n";
-        $step = 1;
+      } elseif($compiler === 'less') {
+
+        // @import "for";
+
+        // @colors: green, red, blue;
+
+        // .example_module {
+        //     .for(@colors); .-each(@name) {
+        //         &.@{name} {background: @@name}
+        //     }
+        // }
 
         foreach($values as $value => $class) {
           if($step >= $value_count) $sep = '';
+          $color_list .= '"' . $class . '"' . $sep;
+          $vars_list .= $value . $sep;
+          $step++;
+        }
+
+        $compiler_content .= '@import "for";' . "\n";
+        $compiler_content .= "\n" . '@patterns--colors: ' . $color_list . ';' . "\n";
+
+        $compiler_content .= "\n" . '.example_module {' . "\n";
+        $compiler_content .= '  .for(@patterns--colors); .-each(@name) {' . "\n";
+        $compiler_content .= '    &.@{name} {background: @@name}' . "\n";
+        $compiler_content .= '  }' . "\n";
+        $compiler_content .= '}' . "\n";
+
+      } else {
+        $sep = "\n";
+
+        foreach($values as $value => $class) {
+          if($step >= $value_count) $sep = '';
+          $step++;
 
           $compiler_content .= '.patterns--colors-' . $class . ' {' . "\n";
           $compiler_content .= '  background-color: ' . $value . ';' . "\n";
