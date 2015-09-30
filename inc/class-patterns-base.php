@@ -352,13 +352,42 @@ class Patterns__Base {
         $values[$value] = $class;
       }
 
+      $value_count = count($values);
+
       if( array_key_exists('patterns_compiler', $this->_patterns_options) ) {
         $compiler = $this->_patterns_options['patterns_compiler'];
       } else {
         $compiler = 'css';
       }
 
-      $compiler_content = 'some stuff';
+      // SASS
+      if($compiler === 'sass') {
+        $color_list = '';
+        $vars_list = '';
+        $sep = ', ';
+        $step = 1;
+
+        foreach($values as $value => $class) {
+          if($step >= $value_count) $sep = '';
+          $color_list .= '"' . $class . '"' . $sep;
+          $vars_list .= '"' . $value . '"' . $sep;
+          $step++;
+        }
+
+        $compiler_content = '$colors-list = ' . $color_list . ';' . "\n";
+        $compiler_content .= '$vars-list = ' . $vars_list . ';' . "\n";
+        $compiler_content .= "\n";
+        $compiler_content .= '// Loop through lists to output classes with background color' . "\n";
+        $compiler_content .= '@each $current-color in $colors-list {' . "\n";
+        $compiler_content .= '  $i: index($colors-list, $current-color);' . "\n";
+        $compiler_content .= '  .pattern-color-#{$current-color} {' . "\n";
+        $compiler_content .= '    background: nth($vars-list, $i);' . "\n";
+        $compiler_content .= '  }' . "\n";
+        $compiler_content .= '}' . "\n";
+
+      } else {
+        $compiler_content = 'some stuff';
+      }
 
       $html .= '<div class="wrap">';
 
