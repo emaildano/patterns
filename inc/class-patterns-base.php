@@ -382,14 +382,14 @@ class Patterns__Base {
           $step++;
         }
 
-        $compiler_content .= '$colors-list: ' . $color_list . ';' . "\n";
-        $compiler_content .= '$vars-list: ' . $vars_list . ';' . "\n";
+        $compiler_content .= '$patterns--colors-list: ' . $color_list . ';' . "\n";
+        $compiler_content .= '$patterns--vars-list: ' . $vars_list . ';' . "\n";
         $compiler_content .= "\n";
         $compiler_content .= '// Loop through lists to output classes with background color' . "\n";
-        $compiler_content .= '@each $current-color in $colors-list {' . "\n";
-        $compiler_content .= '  $i: index($colors-list, $current-color);' . "\n";
-        $compiler_content .= '  .patterns--colors-#{$current-color} {' . "\n";
-        $compiler_content .= '    background-color: nth($vars-list, $i);' . "\n";
+        $compiler_content .= '@each $patterns--current-color in $patterns--colors-list {' . "\n";
+        $compiler_content .= '  $i: index($patterns--colors-list, $patterns--current-color);' . "\n";
+        $compiler_content .= '  .patterns--colors-#{$patterns--current-color} {' . "\n";
+        $compiler_content .= '    background-color: nth($patterns--vars-list, $i);' . "\n";
         $compiler_content .= '  }' . "\n";
         $compiler_content .= '}' . "\n";
 
