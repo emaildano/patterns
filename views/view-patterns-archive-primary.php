@@ -159,8 +159,6 @@ if( have_posts() ) :
 
             </section>
 
-
-
             <?php
             $count++;
           }

@@ -30,31 +30,54 @@ function patterns_settings_init() {
   // Slug Field
   add_settings_field(
     'patterns_cpt_slug',
-    __( 'Pattern Library Slug', 'wordpress' ),
+    __( 'Patterns Slug', 'wordpress' ),
     'patterns_cpt_slug_render',
     'patterns_plugin_page',
     'patterns_patterns_plugin_page_section'
   );
 
-  // Pattern Types
+  // Compiler Options
   add_settings_field(
-    'patterns_types',
-    __( 'Pattern Types', 'wordpress' ),
-    'patterns_types_render',
+    'patterns_compiler_type',
+    __( 'CSS Compiler', 'wordpress' ),
+    'patterns_css_compiler_render',
     'patterns_plugin_page',
     'patterns_patterns_plugin_page_section'
   );
 
+  // Colors Display
+  add_settings_field(
+    'patterns_colors_display',
+    __( 'Display Colors', 'wordpress' ),
+    'patterns_colors_display_render',
+    'patterns_plugin_page',
+    'patterns_patterns_plugin_page_section'
+  );
 
+  // Typography Display
+  add_settings_field(
+    'patterns_typography_display',
+    __( 'Display Typeography', 'wordpress' ),
+    'patterns_typography_display_render',
+    'patterns_plugin_page',
+    'patterns_patterns_plugin_page_section'
+  );
+
+  // Wrapper Class
+  add_settings_field(
+    'patterns_wrapper_class',
+    __( 'Wrapper Class', 'wordpress' ),
+    'patterns_wrapper_class_render',
+    'patterns_plugin_page',
+    'patterns_patterns_plugin_page_section'
+  );
 }
 
 
 // Description
 function patterns_settings_section_callback() {
-  echo __( 'Basic Settings for Patterns', 'wordpress' );
+  // echo '<p>Basic Settings for Patterns</p>';
 }
-
-
 
 // Output the Slug Textfield
 function patterns_cpt_slug_render() {
@@ -65,63 +88,6 @@ function patterns_cpt_slug_render() {
   <input type='text' name='patterns_settings[patterns_cpt_slug]' value='<?php echo $slug; ?>'>
   <?php
 }
-
-
-
-
-
-
-
-
-
-
-function repeat_text_option_type( $option_name, $option, $values ){
-
-    $counter = 0;
-
-    $output = '<div class="of-repeat-loop">';
-
-    if( is_array( $values ) ) foreach ( (array)$values as $value ){
-
-        $output .= '<div class="of-repeat-group">';
-        $output .= '<input class="of-input" name="' . esc_attr( $option_name . '[' . $option['id'] . ']['.$counter.']' ) . '" type="text" value="' . esc_attr( $value ) . '" />';
-        $output .= '<button class="dodelete button icon delete">'. __('Remove') .'</button>';
-
-        $output .= '</div><!–.of-repeat-group–>';
-
-        $counter++;
-    }
-
-    $output .= '<div class="of-repeat-group to-copy">';
-    $output .= '<input class="of-input" data-rel="' . esc_attr( $option_name . '[' . $option['id'] . ']' ) . '" type="text" value="' . esc_attr( $option['std'] ) . '" />';
-    $output .= '<button class="dodelete button icon delete">'. __('Remove') .'</button>';
-    $output .= '</div><!–.of-repeat-group–>';
-
-    $output .= '<button class="docopy button icon add">Add</button>';
-
-    $output .= '</div><!–.of-repeat-loop–>';
-
-    return $output;
-
-
-}
-
-
-
-
-
-
-// Output the Types Textfields
-function patterns_types_render() {
-
-
-  ?>
-
-  <input type='text' name='patterns_settings[patterns_types]' value='<?php echo $slug; ?>'>
-
-  <?php
-}
-
 
 
 
