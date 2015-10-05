@@ -4,6 +4,9 @@ get_header();
 global $posts;
 global $post;
 
+$wrapper_class = get_option('patterns_settings');
+$wrapper_class = isset($wrapper['patterns_wrapper_class']) ? $wrapper_class['patterns_wrapper_class'] : 'container';
+
 if( have_posts() ) :
   echo '<div class="patterns--wrapper">';
 
@@ -128,7 +131,7 @@ if( have_posts() ) :
             $pattern = $view->Patterns__Post_Main( $post );
             $code   = $pattern['code'];
             $desc   = $pattern['desc'];
-
+            $container = get_post_meta( $post->ID, '_Patterns__Main_wrapper', true );
             ?>
 
             <section class="patterns--entry">
@@ -138,7 +141,15 @@ if( have_posts() ) :
 
                 <!-- Start Code Output -->
                 <div class="patterns--pattern-display">
-                  <?= $pattern['code_display'] ?>
+                  <?php
+                    if( $container === 'use' ) {
+                      echo '<div class="' . $wrapper_class . '">';
+                    }
+                    echo $pattern['code_display'];
+                    if( $container === 'use' ) {
+                      echo '</div>';
+                    }
+                  ?>
                 </div>
                 <!-- End Code Output -->
 

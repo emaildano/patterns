@@ -72,10 +72,13 @@ class Patterns__Meta_Boxes {
     // Sanitize the user input.
     $code_data  = esc_html( $_POST['patterns_code_content'] );
     $desc_data  = esc_textarea( $_POST['patterns_code_desc'] );
+    $wrapper = isset( $_POST[ 'patterns_wrapper' ] ) ? 'use' : 'hide';
 
     // Update the meta field.
     update_post_meta( $post_id, '_Patterns__Main_code_value', $code_data );
     update_post_meta( $post_id, '_Patterns__Main_desc_value', $desc_data );
+    update_post_meta( $post_id, '_Patterns__Main_wrapper', $wrapper );
+
   }
 
 
@@ -85,6 +88,7 @@ class Patterns__Meta_Boxes {
    * @param WP_Post $post The post object.
    */
   public function Patterns_Render_Meta_Box_Main( $post ) {
+    global $pagenow;
 
     // Add an nonce field so we can check for it later.
     wp_nonce_field( 'patterns_main_inner_custom_box', 'patterns_main_inner_custom_box_nonce' );
@@ -92,11 +96,29 @@ class Patterns__Meta_Boxes {
     // Use get_post_meta to retrieve an existing value from the database.
     $code_value = get_post_meta( $post->ID, '_Patterns__Main_code_value', true );
     $desc_value = get_post_meta( $post->ID, '_Patterns__Main_desc_value', true );
+    $wrapper    = get_post_meta( $post->ID, '_Patterns__Main_wrapper', true );
+
+    // Determine checked value
+    if ( $wrapper )
+      $checked = checked( $wrapper, 'use', false );
+
+    // Set the default value to checked on new posts
+    if ( 'post-new.php' == $pagenow )
+      $checked = ' checked';
 
     // Display the form, using the current value.
     echo '<table class="form-table"><tbody>';
       echo '<tr>';
-        echo '<th scope="row">Raw Code</th>';
+        echo '<th scope="row"><label for="patterns_wrapper">Use Container</label></th>';
+        echo '<td>';
+          echo '<input id="patterns_wrapper" type="checkbox" name="patterns_wrapper" value="1"' . $checked . ' />';
+          echo '<p class="description">Code should only contain HTML, no php!</p>';
+        echo '</td>';
+
+      echo '</tr>';
+
+      echo '<tr>';
+        echo '<th scope="row"><label for="patterns_code_content">Raw Code</label></th>';
         echo '<td>';
           echo '<textarea id="patterns_code_content" class="large-text code" name="patterns_code_content"';
           echo ' rows="10">' . esc_html($code_value) . '</textarea>';

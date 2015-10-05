@@ -50,7 +50,7 @@ class Patterns__Base {
         'name'              => 'Patterns',
         'singular_name'     => 'Pattern'
       ),
-      'supports'            => array( 'title' ),
+      'supports'            => array( 'title', 'page-attributes' ),
       'taxonomies'          => array( 'pattern_type' ),
       'menu_position'       => 100,
       'menu_icon'           => 'dashicons-layout',
@@ -204,7 +204,16 @@ class Patterns__Base {
     add_settings_field(
       'patterns_typography',
       __( 'Hide Typography', 'wordpress' ),
-      array( $this, 'Patterns_Typeography_Option_Render'),
+      array( $this, 'Patterns_Typography_Option_Render'),
+      'patterns_plugin_page',
+      'patterns_patterns_plugin_page_section'
+    );
+
+    // Typography Sentence
+    add_settings_field(
+      'patterns_typography_phrase',
+      __( 'Typography Phrase', 'wordpress' ),
+      array( $this, 'Patterns_Typography_Phrase_Render'),
       'patterns_plugin_page',
       'patterns_patterns_plugin_page_section'
     );
@@ -264,11 +273,27 @@ class Patterns__Base {
   /**
    * Create Checkbox for Typography Display
    */
-  public function Patterns_Typeography_Option_Render() {
+  public function Patterns_Typography_Option_Render() {
     if ( !isset( $this->_patterns_options['patterns_typography'] ) ) $this->_patterns_options['patterns_typography'] = 0;
 
     $html = '<input type="checkbox" name="patterns_settings[patterns_typography]" value="1"' . checked( 1, $this->_patterns_options['patterns_typography'], false ) . '/>';
     $html .= '<p class="description">Check if you wish not to display typography.</p>';
+    echo $html;
+  }
+
+  /**
+   * Create Textfield for Typography Phrase
+   */
+  public function Patterns_Typography_Phrase_Render() {
+    if( !isset( $this->_patterns_options['patterns_typography_phrase'] ) ) {
+      $phrase = 'This is a {{ tag }} tag with the {{ class }} class.';
+    } else {
+      $phrase = $this->_patterns_options['patterns_typography_phrase'];
+    }
+
+    $html = '<input type="text" name="patterns_settings[patterns_typography_phrase]" value="' .  $phrase . '" class="large-text" />';
+    $html .= '<p class="description">This sentence will appear for each Typography entry.</p>';
+    $html .= '<p>To display the class, use <code>{{ class }}</code>. To display the tag, use <code>{{ tag }}</code>.</p>';
     echo $html;
   }
 

@@ -1,0 +1,6 @@
+/* Hide Parent Option */
+#pageparentdiv p:first-of-type,
+#pageparentdiv label:first-of-type,
+#pageparentdiv #parent_id {
+  display: none;
+}
