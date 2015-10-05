@@ -1,6 +1,7 @@
 <?php
 
 /**
+ * Generates Admin Menu Items
  * Creates the Patterns Custom Post Type
  * Creates the Patterns 'Pattern Type' Taxonomy
  * Creates the Settings Page
@@ -18,6 +19,7 @@ class Patterns__Base {
   public $_patterns_options;
   public $_patterns_option_slug;
   public $_patterns_slug;
+
 
   public function __construct() {
     $this->_patterns_options  = get_option( 'patterns_settings' );
@@ -38,10 +40,52 @@ class Patterns__Base {
     add_action( 'admin_menu', array( $this, 'Patterns_Hide_Add_New') );
   }
 
+
+
+
+
   /**
-   * Create the Main Patterns Custom Post Type
+   * Section: Custom Post Types
+   * --------------------------------------------------------------------------
+   * Author: Shaun M Baer
+   * Last updated: October 5, 2015
+   *
    */
 
+
+
+
+  /**
+   * Build basic args for Submenu Custom Post Types
+   *
+   * @param string $name     label name of CPT
+   * @param string $singular singlular label name of CPT
+   * @param string $slug     slug (prepended with patterns main CPT slug)
+   */
+  public function Patterns_CPT_Args($name, $singular, $slug) {
+    $args = array(
+      'label'               => $name,
+      'labels'              => array(
+        'name'              => $name,
+        'singular_name'     => $singular
+      ),
+      'supports'            => array( 'title' ),
+      'hierarchical'        => true,
+      'public'              => true,
+      'has_archive'         => true,
+      'exclude_from_search' => true,
+      'rewrite'             => array(
+        'slug'              => $this->_patterns_slug . $slug
+      ),
+      'capability_type'     => 'page',
+      'show_in_menu'        => 'edit.php?post_type=patterns'
+    );
+
+    return $args;
+  }
+
+
+  /* Create the Main Patterns Custom Post Type */
   public function Patterns_Primary_CPT() {
 
     $args = array(
@@ -68,76 +112,30 @@ class Patterns__Base {
 
   }
 
-  /**
-   *  Colors CPT
-   */
-
+  /* Colors CPT */
   public function Patterns_Colors_CPT() {
-
-    $args = array(
-      'label'               => 'Colors',
-      'labels'              => array(
-        'name'              => 'Colors',
-        'singular_name'     => 'Color'
-      ),
-      'supports'            => array( 'title' ),
-      'hierarchical'        => true,
-      'public'              => true,
-      'has_archive'         => true,
-      'exclude_from_search' => true,
-      'rewrite'             => array(
-        'slug'              => $this->_patterns_slug . '-colors'
-      ),
-      'capability_type'     => 'page',
-      'show_in_menu'        => 'edit.php?post_type=patterns'
-    );
-
+    $args = $this->Patterns_CPT_Args('Colors', 'Color', '-colors');
     register_post_type( 'patterns_colors', $args );
-
   }
 
 
-  /**
-   *  Typography CPT
-   */
-
+  /* Typography CPT */
   public function Patterns_Typography_CPT() {
-
-    $args = array(
-      'label'               => 'Typography Styles',
-      'labels'              => array(
-        'name'              => 'Typography Styles',
-        'singular_name'     => 'Typography Style'
-      ),
-      'supports'            => array( 'title' ),
-      'hierarchical'        => true,
-      'public'              => true,
-      'has_archive'         => true,
-      'exclude_from_search' => true,
-      'rewrite'             => array(
-        'slug'              => $this->_patterns_slug . '-type-styles'
-      ),
-      'capability_type'     => 'page',
-      'show_in_menu'        => 'edit.php?post_type=patterns'
-    );
-
+    $args = $this->Patterns_CPT_Args('Typography Styles', 'Typography Style', '-type-styles');
     register_post_type( 'patterns_typography', $args );
-
   }
 
 
-  /**
-   * Pattern Type Taxonomy
-   */
+  /* Pattern Type Taxonomy */
   public function Patterns_Taxonomy() {
 
     $args = array(
-      'labels'                     => array(
-        'name'                       => 'Pattern Types',
-        'singular_name'              => 'Pattern Type'
+      'labels'          => array(
+        'name'          => 'Pattern Types',
+        'singular_name' => 'Pattern Type'
       ),
-      'hierarchical'               => true,
-      'show_tagcloud'              => false,
+      'hierarchical'    => true,
+      'show_tagcloud'   => false,
     );
 
     register_taxonomy( 'pattern_type', array( 'patterns' ), $args );
@@ -145,68 +143,90 @@ class Patterns__Base {
   }
 
 
+
   /**
-   * Hide 'Add New' for Patterns CPT
+   * Hide 'Add New' for Patterns CPT submenu
+   *
+   * Makes the menu a little slimmer.
+   *
    */
   public function Patterns_Hide_Add_New() {
-      global $submenu;
-      unset($submenu['edit.php?post_type=patterns'][10]);
+    global $submenu;
+    unset($submenu['edit.php?post_type=patterns'][10]);
   }
 
 
 
-  /**
-   * SETTINGS PAGE
-   */
 
   /**
-   * Add Settings page to Patterns CPT menu item
+   * Section: Settings Page
+   * --------------------------------------------------------------------------
+   * Author: Shaun M Baer
+   * Last updated: October 5, 2015
+   *
    */
+
+
+  /* Add Settings page to Patterns CPT menu item */
   public function Patterns_Add_Admin_Menu() {
     add_submenu_page( 'edit.php?post_type=patterns', 'Settings', 'Settings', 'manage_options', 'patterns', array( $this, 'Patterns_Settings') );
   }
 
 
   /**
-   * Plugin Settings Page
+   * Register settings
    */
   public function Patterns_Settings_Init() {
 
+    $page = 'patterns_plugin_page';
+    $slug_section = 'patterns_slug_section';
+    $display_section = 'patterns_display_section';
+    $settings_section = 'patterns_class_section';
+
     register_setting( 'patterns_plugin_page', 'patterns_settings' );
 
-    // Basic Description Section
+    /**
+     * Sections
+     */
+
+    // Basic Section
     add_settings_section(
-      'patterns_patterns_plugin_page_section',
-      __( 'Patterns Settings', 'wordpress' ),
-      array( $this, 'Patterns_Settings_Desc_Render'),
-      'patterns_plugin_page'
+      $settings_section, __( 'Basic Settings', 'wordpress' ), array( $this, 'Patterns_HR_Render'), $page
     );
+
+    // Display Section
+    add_settings_section(
+      $display_section, __( 'Display Options', 'wordpress' ), array( $this, 'Patterns_HR_Render'), $page
+    );
+
+
+
+    /**
+     * Settings
+     */
 
     // Slug Field
     add_settings_field(
       'patterns_cpt_slug',
       __( 'Patterns Slug', 'wordpress' ),
       array( $this, 'Patterns_CPT_Slug_Render'),
-      'patterns_plugin_page',
-      'patterns_patterns_plugin_page_section'
+      $page, $settings_section
     );
 
-    // Colors Display
+    // Patterns Style Option
     add_settings_field(
-      'patterns_colors',
-      __( 'Hide Colors', 'wordpress' ),
-      array( $this, 'Patterns_Color_Display_Render'),
-      'patterns_plugin_page',
-      'patterns_patterns_plugin_page_section'
+      'patterns_style',
+      __( 'Disable Patterns Styles', 'wordpress' ),
+      array( $this, 'Patterns_Style_Option_Render'),
+      $page, $settings_section
     );
 
-    // Typography Display
+    // Wrapper Class
     add_settings_field(
-      'patterns_typography',
-      __( 'Hide Typography', 'wordpress' ),
-      array( $this, 'Patterns_Typography_Option_Render'),
-      'patterns_plugin_page',
-      'patterns_patterns_plugin_page_section'
+      'patterns_wrapper_class',
+      'Wrapper Class',
+      array( $this, 'Patterns_Wrapper_Class_Render'),
+      $page, $settings_section
     );
 
     // Typography Sentence
@@ -214,17 +234,29 @@ class Patterns__Base {
       'patterns_typography_phrase',
       __( 'Typography Phrase', 'wordpress' ),
       array( $this, 'Patterns_Typography_Phrase_Render'),
-      'patterns_plugin_page',
-      'patterns_patterns_plugin_page_section'
+      $page, $settings_section
     );
 
-    // Wrapper Class
+
+
+    /**
+     * Display
+     */
+
+    // Colors Display
     add_settings_field(
-      'patterns_wrapper_class',
-      __( 'Wrapper Class', 'wordpress' ),
-      array( $this, 'Patterns_Wrapper_Class_Render'),
-      'patterns_plugin_page',
-      'patterns_patterns_plugin_page_section'
+      'patterns_colors',
+      __( 'Hide Colors', 'wordpress' ),
+      array( $this, 'Patterns_Color_Display_Render'),
+      $page, $display_section
+    );
+
+    // Typography Display
+    add_settings_field(
+      'patterns_typography',
+      __( 'Hide Typography', 'wordpress' ),
+      array( $this, 'Patterns_Typography_Option_Render'),
+      $page, $display_section
     );
 
     // Compiler Options
@@ -232,104 +264,102 @@ class Patterns__Base {
       'patterns_compiler',
       __( 'CSS Compiler', 'wordpress' ),
       array( $this, 'Patterns_CSS_Compiler_Render'),
-      'patterns_plugin_page',
-      'patterns_patterns_plugin_page_section'
+      $page, $display_section
     );
 
   }
 
 
   /**
-   * Description of Settings Page
+   * Render Settings
    */
-  public function Patterns_Settings_Desc_Render() {
-    echo '<p>Settings for Patterns</p>';
-  }
 
 
-  /**
-   * Create Textfield for Slug
-   */
-  public function Patterns_CPT_Slug_Render() {
-    $slug = $this->_patterns_slug;
-    if(!$slug) $slug = 'pattern-library';
-
-    $html = '<input type="text" name="patterns_settings[patterns_cpt_slug]" value="' .  $slug . '">';
-    $html .= '<p class="description">Base slug for Patterns archive.</p>';
-    echo $html;
-  }
-
-  /**
-   * Create Checkbox for Colors Display
-   */
-  public function Patterns_Color_Display_Render() {
-    if ( ! isset( $this->_patterns_options['patterns_colors'] ) ) $this->_patterns_options['patterns_colors'] = 0;
-
-    $html = '<input type="checkbox" name="patterns_settings[patterns_colors]" value="1"' . checked( 1, $this->_patterns_options['patterns_colors'], false ) . '/>';
-    $html .= '<p class="description">Check if you wish not to display colors.</p>';
-    echo $html;
-  }
-
-  /**
-   * Create Checkbox for Typography Display
-   */
-  public function Patterns_Typography_Option_Render() {
-    if ( !isset( $this->_patterns_options['patterns_typography'] ) ) $this->_patterns_options['patterns_typography'] = 0;
-
-    $html = '<input type="checkbox" name="patterns_settings[patterns_typography]" value="1"' . checked( 1, $this->_patterns_options['patterns_typography'], false ) . '/>';
-    $html .= '<p class="description">Check if you wish not to display typography.</p>';
-    echo $html;
-  }
-
-  /**
-   * Create Textfield for Typography Phrase
-   */
-  public function Patterns_Typography_Phrase_Render() {
-    if( !isset( $this->_patterns_options['patterns_typography_phrase'] ) ) {
-      $phrase = 'This is a {{ tag }} tag with the {{ class }} class.';
-    } else {
-      $phrase = $this->_patterns_options['patterns_typography_phrase'];
+    /* Settings Section Output */
+    public function Patterns_HR_Render() {
+      echo '<hr>';
     }
 
-    $html = '<input type="text" name="patterns_settings[patterns_typography_phrase]" value="' .  $phrase . '" class="large-text" />';
-    $html .= '<p class="description">This sentence will appear for each Typography entry.</p>';
-    $html .= '<p>To display the class, use <code>{{ class }}</code>. To display the tag, use <code>{{ tag }}</code>.</p>';
-    echo $html;
-  }
+    /* Create Textfield for Slug */
+    public function Patterns_CPT_Slug_Render() {
+      $slug = $this->_patterns_slug;
+      if(!$slug) $slug = 'pattern-library';
 
-  /**
-   * Create Textfield for Wrapper Class
-   */
-  public function Patterns_Wrapper_Class_Render() {
-    if( !isset( $this->_patterns_options['patterns_wrapper_class'] ) ) {
-      $wrapper = 'container';
-    } else {
-      $wrapper = $this->_patterns_options['patterns_wrapper_class'];
+      $html = '<input type="text" name="patterns_settings[patterns_cpt_slug]" value="' .  $slug . '">';
+      $html .= '<p class="description"> Base slug for Patterns archive.</p>';
+
+      echo $html;
     }
 
-    $html = '<input type="text" name="patterns_settings[patterns_wrapper_class]" value="' .  $wrapper . '">';
-    $html .= '<p class="description">The class used to wrap main body content.</p>';
-    echo $html;
-  }
+    /* Create Checkbox for Colors Display */
+    public function Patterns_Color_Display_Render() {
+      if ( ! isset( $this->_patterns_options['patterns_colors'] ) ) $this->_patterns_options['patterns_colors'] = 0;
+
+      $html = '<input type="checkbox" name="patterns_settings[patterns_colors]" value="1"' . checked( 1, $this->_patterns_options['patterns_colors'], false ) . '/>';
+      $html .= '<p class="description"> Check if you wish not to display colors.</p>';
+      echo $html;
+    }
+
+    /* Create Checkbox for Typography Display */
+    public function Patterns_Typography_Option_Render() {
+      if ( !isset( $this->_patterns_options['patterns_typography'] ) ) $this->_patterns_options['patterns_typography'] = 0;
+
+      $html = '<input type="checkbox" name="patterns_settings[patterns_typography]" value="1"' . checked( 1, $this->_patterns_options['patterns_typography'], false ) . '/>';
+      $html .= '<p class="description"> Check if you wish not to display typography.</p>';
+      echo $html;
+    }
+
+    /* Create Textfield for Typography Phrase */
+    public function Patterns_Typography_Phrase_Render() {
+      if( !isset( $this->_patterns_options['patterns_typography_phrase'] ) ) {
+        $phrase = 'This is a {{ tag }} tag with the {{ class }} class.';
+      } else {
+        $phrase = $this->_patterns_options['patterns_typography_phrase'];
+      }
+
+      $html = '<input type="text" name="patterns_settings[patterns_typography_phrase]" value="' .  $phrase . '" class="large-text" />';
+      $html .= '<p class="description">This sentence will appear for each Typography entry.</p>';
+      $html .= '<p>To display the class, use <code>{{ class }}</code>. To display the tag, use <code>{{ tag }}</code>.</p>';
+      echo $html;
+    }
+
+    /* Create Textfield for Wrapper Class */
+    public function Patterns_Wrapper_Class_Render() {
+      if( !isset( $this->_patterns_options['patterns_wrapper_class'] ) ) {
+        $wrapper = 'container';
+      } else {
+        $wrapper = $this->_patterns_options['patterns_wrapper_class'];
+      }
+
+      $html = '<input type="text" name="patterns_settings[patterns_wrapper_class]" value="' .  $wrapper . '">';
+      $html .= '<p class="description"> The class used to wrap main body content.</p>';
+      echo $html;
+    }
+
+    /* Disable Default Patterns Styles */
+    public function Patterns_Style_Option_Render() {
+      if ( !isset( $this->_patterns_options['patterns_styles'] ) ) $this->_patterns_options['patterns_styles'] = 0;
+
+      $html = '<input type="checkbox" name="patterns_settings[patterns_style]" value="1"' . checked( 1, isset( $this->_patterns_options['patterns_style'] ), false ) . '/>';
+      $html .= '<p class="description">Check to disable default styles.</p>';
+      echo $html;
+    }
 
 
-  /**
-   * Create Select for CSS Compiler
-   */
-  public function Patterns_CSS_Compiler_Render() {
-    $options = $this->_patterns_options;
-    if( !isset( $options['patterns_compiler'] ) ) $options['patterns_compiler'] = 'css';
+    /* Create Select for CSS Compiler */
+    public function Patterns_CSS_Compiler_Render() {
+      $options = $this->_patterns_options;
+      if( !isset( $options['patterns_compiler'] ) ) $options['patterns_compiler'] = 'css';
 
+      $html = '<select name="patterns_settings[patterns_compiler]">';
+        $html .= '<option value="sass"' . selected( $options['patterns_compiler'], 'sass', false) . '>sass</option>';
+        $html .= '<option value="less"' . selected( $options['patterns_compiler'], 'less', false) . '>less</option>';
+        $html .= '<option value="css"' . selected( $options['patterns_compiler'], 'css', false) . '>css</option>';
+      $html .= '</select>';
+      $html .= '<p class="description">Select a compiler for use in generating code for Colors.</p>';
+      echo $html;
+    }
 
-
-    $html = '<select name="patterns_settings[patterns_compiler]">';
-      $html .= '<option value="sass"' . selected( $options['patterns_compiler'], 'sass', false) . '>sass</option>';
-      $html .= '<option value="less"' . selected( $options['patterns_compiler'], 'less', false) . '>less</option>';
-      $html .= '<option value="css"' . selected( $options['patterns_compiler'], 'css', false) . '>css</option>';
-    $html .= '</select>';
-    $html .= '<p class="description">Select a compiler for use in generating code for Colors.</p>';
-    echo $html;
-  }
 
 
   /**
@@ -337,29 +367,34 @@ class Patterns__Base {
    */
   public function Patterns_Settings() {
 
-    echo '<form action="options.php" method="post">';
-      settings_fields( 'patterns_plugin_page' );
-      do_settings_sections( 'patterns_plugin_page' );
-      submit_button();
-    echo '</form>';
+    echo '<div class="wrap">';
+      echo '<h1>Pattern Library and Style Guide Settings</h1>';
+      echo '<form action="options.php" method="post">';
 
-    $compiler_text = $this->Patterns_Style_Output();
+        settings_fields( 'patterns_plugin_page' );
+        do_settings_sections( 'patterns_plugin_page' );
+        submit_button();
 
-    if($compiler_text) {
-      echo $compiler_text;
-    }
+      echo '</form>';
+
+      $compiler_text = $this->Patterns_Style_Output();
+      if($compiler_text) {
+        echo $compiler_text;
+      }
+
+    echo '</div>';
 
     // Flush them rules
     flush_rewrite_rules();
-
   }
 
 
   /**
-   * Determine the Compiler Output
+   * Determine and generate the Compiler Output
    */
   public function Patterns_Style_Output() {
-    // View Function Class
+
+    // Get View Function Class
     require ( trailingslashit( dirname( __DIR__ ) ) . 'views/class-patterns-view-functions.php' );
 
     $values = array();
@@ -398,9 +433,10 @@ class Patterns__Base {
         $compiler = 'css';
       }
 
-      // SASS
+      // Create parsable content based on compiler type
       if($compiler === 'sass') {
 
+        // SASS
         foreach($values as $value => $class) {
           if($step >= $value_count) $sep = '';
           $color_list .= '"' . $class . '"' . $sep;
@@ -421,33 +457,26 @@ class Patterns__Base {
 
       } elseif($compiler === 'less') {
 
-        // @import "for";
-
-        // @colors: green, red, blue;
-
-        // .example_module {
-        //     .for(@colors); .-each(@name) {
-        //         &.@{name} {background: @@name}
-        //     }
-        // }
-
+        // LESS CSS
         foreach($values as $value => $class) {
           if($step >= $value_count) $sep = '';
-          $color_list .= '"' . $class . '"' . $sep;
-          $vars_list .= $value . $sep;
+          $color_list .= $class . $sep;
           $step++;
         }
 
-        $compiler_content .= '@import "for";' . "\n";
-        $compiler_content .= "\n" . '@patterns--colors: ' . $color_list . ';' . "\n";
-
-        $compiler_content .= "\n" . '.example_module {' . "\n";
-        $compiler_content .= '  .for(@patterns--colors); .-each(@name) {' . "\n";
-        $compiler_content .= '    &.@{name} {background: @@name}' . "\n";
-        $compiler_content .= '  }' . "\n";
-        $compiler_content .= '}' . "\n";
+        $compiler_content .= '@patterns--colors: ' . $color_list . ';' . "\n";
+        $compiler_content .= "\n";
+        $compiler_content .= '.-(@i: length(@patterns--colors)) when (@i > 0) {' . "\n";
+        $compiler_content .= '  @name: extract(@patterns--colors, @i);' . "\n";
+        $compiler_content .= '    &.patterns--colors-@{name} {' . "\n";
+        $compiler_content .= '      background-color: @@name;' . "\n";
+        $compiler_content .= '    }' . "\n";
+        $compiler_content .= '  .-((@i - 1));' . "\n";
+        $compiler_content .= '} .-;' . "\n";
 
       } else {
+
+        // Basic CSS
         $sep = "\n";
 
         foreach($values as $value => $class) {
@@ -462,8 +491,8 @@ class Patterns__Base {
       }
 
       $html .= '<div class="wrap">';
-
-        $html .= '<h4>Copy and Paste into your ' . $compiler . ' file</h4>';
+        $html .= '<h2>Compiler Output for Colors</h2><hr>';
+        $html .= '<p><strong>Copy and Paste into your ' . $compiler . ' file</strong></p>';
         $html .= '<textarea rows="10" cols="30" class="large-text code">';
           $html .= $compiler_content;
         $html .= '</textarea>';

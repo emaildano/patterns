@@ -1,11 +1,25 @@
 <?php
 
+/**
+ * Generates Post Type Meta Boxes
+ *
+ * @link       https://github.com/iamhexcoder
+ * @since      1.0.0
+ *
+ * @package    Patterns
+ * @subpackage Patterns/includes
+ * @author     Shaun Baer <shaun.baer@gmail.com>
+ */
+
 class Patterns__Meta_Boxes {
+
 
   public function __construct() {
     // Patterns
     add_action( 'add_meta_boxes', array( $this, 'Patterns_Main_Meta_Box' ) );
+    add_action( 'add_meta_boxes', array( $this, 'Patterns_Main_Sidebar_Meta_Box' ) );
     add_action( 'save_post', array( $this, 'Patterns_Main_Meta_Box_Save' ) );
+    add_action( 'save_post', array( $this, 'Patterns_Main_Sidebar_Meta_Box_Save' ) );
 
     // Colors
     add_action( 'add_meta_boxes', array( $this, 'Patterns_Colors_Meta_Box' ) );
@@ -18,9 +32,16 @@ class Patterns__Meta_Boxes {
 
 
 
+
   /**
-   * PATTERNS MAIN
+   * Section: Pattners Main Meta Box
+   * --------------------------------------------------------------------------
+   * Author: Shaun M Baer
+   * Last updated: October 5, 2015
+   *
    */
+
+
   public function Patterns_Main_Meta_Box( $post_type ) {
     $post_types = array('patterns');     // limit meta box to certain post types
     if ( in_array( $post_type, $post_types )) {
@@ -72,12 +93,10 @@ class Patterns__Meta_Boxes {
     // Sanitize the user input.
     $code_data  = esc_html( $_POST['patterns_code_content'] );
     $desc_data  = esc_textarea( $_POST['patterns_code_desc'] );
-    $wrapper = isset( $_POST[ 'patterns_wrapper' ] ) ? 'use' : 'hide';
 
     // Update the meta field.
     update_post_meta( $post_id, '_Patterns__Main_code_value', $code_data );
     update_post_meta( $post_id, '_Patterns__Main_desc_value', $desc_data );
-    update_post_meta( $post_id, '_Patterns__Main_wrapper', $wrapper );
 
   }
 
@@ -88,7 +107,6 @@ class Patterns__Meta_Boxes {
    * @param WP_Post $post The post object.
    */
   public function Patterns_Render_Meta_Box_Main( $post ) {
-    global $pagenow;
 
     // Add an nonce field so we can check for it later.
     wp_nonce_field( 'patterns_main_inner_custom_box', 'patterns_main_inner_custom_box_nonce' );
@@ -96,27 +114,9 @@ class Patterns__Meta_Boxes {
     // Use get_post_meta to retrieve an existing value from the database.
     $code_value = get_post_meta( $post->ID, '_Patterns__Main_code_value', true );
     $desc_value = get_post_meta( $post->ID, '_Patterns__Main_desc_value', true );
-    $wrapper    = get_post_meta( $post->ID, '_Patterns__Main_wrapper', true );
-
-    // Determine checked value
-    if ( $wrapper )
-      $checked = checked( $wrapper, 'use', false );
-
-    // Set the default value to checked on new posts
-    if ( 'post-new.php' == $pagenow )
-      $checked = ' checked';
 
     // Display the form, using the current value.
     echo '<table class="form-table"><tbody>';
-      echo '<tr>';
-        echo '<th scope="row"><label for="patterns_wrapper">Use Container</label></th>';
-        echo '<td>';
-          echo '<input id="patterns_wrapper" type="checkbox" name="patterns_wrapper" value="1"' . $checked . ' />';
-          echo '<p class="description">Code should only contain HTML, no php!</p>';
-        echo '</td>';
-
-      echo '</tr>';
-
       echo '<tr>';
         echo '<th scope="row"><label for="patterns_code_content">Raw Code</label></th>';
         echo '<td>';
@@ -140,10 +140,125 @@ class Patterns__Meta_Boxes {
 
 
 
+  /**
+   * Section: Patterns Main Option Meta Box
+   * --------------------------------------------------------------------------
+   * Purpose: Options
+   * Author: Shaun M Baer
+   * Last updated: October 5, 2015
+   *
+   */
+
+
+
+  public function Patterns_Main_Sidebar_Meta_Box( $post_type ) {
+    $post_types = array('patterns');     // limit meta box to certain post types
+    if ( in_array( $post_type, $post_types )) {
+      add_meta_box(
+        'Patterns_CPT_Sidebar_MetaBox',
+        'Patterns Post Options',
+        array( $this, 'Patterns_Render_Meta_Box_Sidebar_Main' ),
+        $post_type,
+        'normal',
+        'default'
+      );
+    }
+  }
+
 
   /**
-   * COLORS
+   * Save the meta when the post is saved.
+   *
+   * @param int $post_id The ID of the post being saved.
    */
+  public function Patterns_Main_Sidebar_Meta_Box_Save( $post_id ) {
+
+    /*
+     * We need to verify this came from the our screen and with proper authorization,
+     * because save_post can be triggered at other times.
+     */
+
+    // Check if our nonce is set.
+    if ( ! isset( $_POST['patterns_main_sidebar_inner_custom_box_nonce'] ) )
+      return $post_id;
+
+    $nonce = $_POST['patterns_main_sidebar_inner_custom_box_nonce'];
+
+    // Verify that the nonce is valid.
+    if ( ! wp_verify_nonce( $nonce, 'patterns_main_sidebar_inner_custom_box' ) )
+      return $post_id;
+
+    // If this is an autosave, our form has not been submitted,
+                //     so we don't want to do anything.
+    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
+      return $post_id;
+
+    // Check the user's permissions.
+    if ( !current_user_can( 'edit_post', $post_id ) )
+      return $post_id;
+
+    /* OK, its safe for us to save the data now. */
+
+    // Sanitize the user input.
+    $wrapper = isset( $_POST[ 'patterns_wrapper' ] ) ? 'use' : 'hide';
+
+    // Update the meta field.
+    update_post_meta( $post_id, '_Patterns__Main_wrapper', $wrapper );
+
+  }
+
+
+  /**
+   * Render Meta Box content.
+   *
+   * @param WP_Post $post The post object.
+   */
+  public function Patterns_Render_Meta_Box_Sidebar_Main( $post ) {
+    global $pagenow;
+
+    // Add an nonce field so we can check for it later.
+    wp_nonce_field( 'patterns_main_sidebar_inner_custom_box', 'patterns_main_sidebar_inner_custom_box_nonce' );
+
+    // Use get_post_meta to retrieve an existing value from the database.
+    $wrapper = get_post_meta( $post->ID, '_Patterns__Main_wrapper', true );
+    $checked = '';
+
+    // Determine checked value
+    if ( $wrapper )
+      $checked = checked( $wrapper, 'use', false );
+
+    // Set the default value to checked on new posts
+    if ( 'post-new.php' == $pagenow )
+      $checked = ' checked';
+
+    $html = '<table class="form-table"><tbody>';
+      $html .= '<tr>';
+        $html .= '<th scope="row"><label for="patterns_wrapper">Use Container</label></th>';
+        $html .= '<td>';
+          $html .= '<input id="patterns_wrapper" type="checkbox" name="patterns_wrapper" value="1"' . $checked . ' />';
+          $html .= '<span class="description">Wrap display code in container with class from the settings page.</span><br>';
+        $html .= '</td>';
+      $html .= '</tr>';
+    $html .= '</tbody></table>';
+
+    echo $html;
+
+  }
+
+
+
+
+
+
+  /**
+   * Section: Colors Meta Boxes
+   * --------------------------------------------------------------------------
+   * Author: Shaun M Baer
+   * Last updated: October 5, 2015
+   *
+   */
+
+
   public function Patterns_Colors_Meta_Box( $post_type ) {
     $post_types = array('patterns_colors');     // limit meta box to certain post types
     if ( in_array( $post_type, $post_types )) {
@@ -221,9 +336,16 @@ class Patterns__Meta_Boxes {
 
 
 
+
   /**
-   * TYPOGRAPHY
+   * Section: Typography Meta Box
+   * --------------------------------------------------------------------------
+   * Author: Shaun M Baer
+   * Last updated: October 5, 2015
+   *
    */
+
+
   public function Patterns_Typography_Meta_Box( $post_type ) {
     $post_types = array('patterns_typography');     // limit meta box to certain post types
     if ( in_array( $post_type, $post_types )) {

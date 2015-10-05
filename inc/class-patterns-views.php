@@ -124,9 +124,9 @@ class Patterns__Views_Init {
     }
   }
 
-  public function Patterns_Admin_Enqueue_Styles() {
+  public function Patterns_Admin_Enqueue_Styles( $hook ) {
     global $post_type;
-    if( 'patterns' == $post_type ) {
+    if( 'patterns' === $post_type ) {
       wp_enqueue_style( 'patterns-admin-css', plugins_url( 'assets/dist/css/patterns-admin.css', __DIR__ ) );
     }
   }
