@@ -200,5 +200,4 @@ else :
   endif;
 endif;
 
-
 get_footer();
