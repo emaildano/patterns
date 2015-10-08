@@ -31,8 +31,6 @@ if( have_posts() ) :
   if( $posts_ordered['patterns'] )
     $pattern_posts = $posts_ordered['patterns'];
 
-
-
   /**
    * Build the navigation
    */
@@ -90,7 +88,6 @@ if( have_posts() ) :
     }
   echo '</nav>';
 
-
   echo '<div class="patterns--section-wrapper">';
     // Colors
     if($color_posts) {
@@ -100,11 +97,6 @@ if( have_posts() ) :
       echo '</section>';
     }
 
-
-
-
-
-
     // Typography
     if($typography_posts) {
       echo '<section id="patterns-typography" class="patterns--type-section">';
@@ -112,9 +104,6 @@ if( have_posts() ) :
         wp_reset_postdata();
       echo '</section>';
     }
-
-
-
 
     // Pattern Types
     if($pattern_posts) {
@@ -194,6 +183,22 @@ if( have_posts() ) :
   echo '</div>'; // Entry Wrapper
 
   echo '</div>'; // Patterns Wrapper
+
+else :
+  if (current_user_can('administrator')) :
+
+    // TODO: Make these global or generate them via a function like plugin_admin_url()
+
+    $plugin_repo      = 'https://github.com/iamhexcoder/patterns';
+    $plugin_admin     = 'edit.php?post_type=patterns';
+
+    echo '<div class="patterns--toggle-wrapper">';
+      echo '<p>You have no Patterns.</p>';
+      echo '<p><a href="' . admin_url() . $plugin_admin . '">Create one!</a> or view the <a href="' . $plugin_repo . '">README</a> for more help.</p>';
+    echo '</div>';
+
+  endif;
 endif;
+
 
 get_footer();
