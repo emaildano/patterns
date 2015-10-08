@@ -96,9 +96,10 @@ class Patterns__Views_Init {
 
       // Return all posts
       $query->set( 'post_type', $post_types );
-      $query->set( 'posts_per_page', -1 );
+      $query->set( 'posts_per_page', 600 );
       $query->set( 'order', 'ASC' );
       $query->set( 'orderby', 'menu_order' );
+      $query->set( 'no_found_rows', TRUE );
       return;
     }
   }
