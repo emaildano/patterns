@@ -21,15 +21,13 @@ foreach($color_posts as $post) {
   $color_info = $view->Patterns__Colors_Class($post);
   $value = key($color_info);
 
-  // Print Some Stuff!!
-  echo '<pre>'; print_r($color_info); echo '</pre>';
+  $html = '<div class="patterns--colors-wrapper patterns--colors-' . $color_info[$value] . '">';
+    $html .= '<div class="pattern-color-title">';
+      $html .= '<p>' . $value . '</p>';
+    $html .= '</div>';
+  $html .= '</div>';
 
-
-  echo '<div class="patterns--colors-wrapper patterns--colors-' . $color_info[$value] . '">';
-    echo '<div class="pattern-color-title">';
-      echo '<p>' . $value . '</p>';
-    echo '</div>';
-  echo '</div>';
+  echo $html;
 
 }
 
